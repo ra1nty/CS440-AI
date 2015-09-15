@@ -8,7 +8,6 @@ class Maze:
     STARTING = 'P'
     startingCoord = {}
     endingCoord = {}
-    searchNodes = {}
 
     class searchNode:
 
@@ -43,66 +42,62 @@ class Maze:
                 self.currChild += 1
             return temp
 
+        def hasMoreChildren(self):
+            return self.currChild < len(self.children)
+
         def __eq__(self, coord):
             if coord is None:
                 return False
 
-            return (self.coordinates['x'] == coord[0] and
-                    self.coordinates['y'] == coord[1])
+            return (self.coordinates['x'] == coord['x'] and
+                    self.coordinates['y'] == coord['y'])
+
+        def __ne__(self, coord):
+            if coord is None:
+                return False
+
+            return (self.coordinates['x'] != coord['x'] and
+                    self.coordinates['y'] != coord['y'])
 
 
-        def addChildren(self, maze, mazeClass):
+        def addChildren(self, maze):
+
+            print "Children called ",
+            if len(self.children) != 0:
+                print "already made"
+                return
+
             # Right
             y = self.coordinates['y']
             x = self.coordinates['x']
 
-            if maze[y][x + 1] != self.WALL:
-                if (x+1, y) in mazeClass.searchNodes:
-                    temp = mazeClass.searchNodes[(x+1, y)]
-                    self.children.append(temp)
-
-                elif maze[y][x + 1] == self.GOAL:
+            if maze[y][x + 1] != self.WALL and self.parent != dict(x=x+1, y=y):
+                if maze[y][x + 1] == self.GOAL:
                     self.children.append(Maze.searchNode(y, x + 1, parent=self, end=True))
-                    mazeClass.searchNodes[(x+1, y)] = self.children[len(self.children) - 1]
                 else:
-                    self.children.append(Maze.searchNode(y, x + 1, self))
-                    mazeClass.searchNodes[(x+1, y)] = self.children[len(self.children) - 1]
+                    self.children.append(Maze.searchNode(y, x + 1, parent=self))
 
             # Down
-            elif maze[y + 1][x] != self.WALL:
-                if (x, y+1) in mazeClass.searchNodes:
-                    temp = mazeClass.searchNodes[(x, y+1)]
-                    self.children.append(temp)
-                elif maze[y + 1][x] == self.GOAL:
+            elif maze[y + 1][x] != self.WALL and self.parent != dict(x=x, y=y+1):
+                if maze[y + 1][x] == self.GOAL:
                     self.children.append(Maze.searchNode(y + 1, x, parent=self, end=True))
-                    mazeClass.searchNodes[(x, y+1)] = self.children[len(self.children) - 1]
                 else:
-                    self.children.append(Maze.searchNode(y + 1, x, self))
-                    mazeClass.searchNodes[(x, y+1)] = self.children[len(self.children) - 1]
+                    self.children.append(Maze.searchNode(y + 1, x, parent=self))
 
             # Left
-            elif maze[y][x - 1] != self.WALL:
-                if (x-1, y) in mazeClass.searchNodes:
-                    temp = mazeClass.searchNodes[(x-1, y)]
-                    self.children.append(temp)
-                elif maze[y][x - 1] == self.GOAL:
+            elif maze[y][x - 1] != self.WALL and self.parent != dict(x=x-1, y=y):
+                if maze[y][x - 1] == self.GOAL:
                     self.children.append(Maze.searchNode(y, x - 1, parent=self, end=True))
-                    mazeClass.searchNodes[(x-1, y)] = self.children[len(self.children) - 1]
                 else:
-                    self.children.append(Maze.searchNode(y, x - 1, self))
-                    mazeClass.searchNodes[(x-1, y)] = self.children[len(self.children) - 1]
+                    self.children.append(Maze.searchNode(y, x - 1, parent=self))
 
             # Up
-            elif maze[y - 1][x] != self.WALL:
-                if (x, y-1) in mazeClass.searchNodes:
-                    temp = mazeClass.searchNodes[(x, y-1)]
-                    self.children.append(temp)
-                elif maze[y - 1][x] == self.GOAL:
+            elif maze[y - 1][x] != self.WALL and self.parent != dict(x=x, y=y-1):
+                if maze[y - 1][x] == self.GOAL:
                     self.children.append(Maze.searchNode(y - 1, x, parent=self, end=True))
-                    mazeClass.searchNodes[(x,y-1)] = self.children[len(self.children) - 1]
                 else:
-                    self.children.append(Maze.searchNode(y - 1, x, self))
-                    mazeClass.searchNodes[(x, y-1)] = self.children[len(self.children) - 1]
+                    self.children.append(Maze.searchNode(y - 1, x, parent=self))
+            print "generated"
 
     def __init__(self, filename):
         maze = self.__loadFile(filename)
@@ -151,8 +146,7 @@ class Maze:
                           timeseries,
                           self.searchNode(x=self.startingCoord['x'],
                                           y=self.startingCoord['y'],
-                                          start=True),
-                          self)
+                                          start=True))
         else:
             return None
 

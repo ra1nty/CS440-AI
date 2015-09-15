@@ -4,7 +4,7 @@ from maze import Maze
 
 MAZES = "./mazes/"
 
-def DFS(parsedMaze, timeseries, startingNode, mazeClass):
+def DFS(parsedMaze, timeseries, startingNode):
     nodeStack = list()
 
     if (timeseries):
@@ -17,13 +17,22 @@ def DFS(parsedMaze, timeseries, startingNode, mazeClass):
     currNode = startingNode
 
     while (not currNode.isEnding()):
-        currNode.addChildren(parsedMaze, mazeClass)
+        currNode.addChildren(parsedMaze)
+        prevNode = currNode
         currNode = currNode.getNextChild()
 
         while (currNode == None):
-            currNode = nodeStack.pop()
-            currNode = currNode.getNextChild()
-            nodeStack.append(currNode)
+            if (len(nodeStack) == 0):
+                return None
+
+            prevNode = nodeStack.pop()
+            currNode = prevNode.getNextChild()
+
+            if (prevNode.hasMoreChildren()):
+                nodeStack.append(tempNode)
+
+            if currNode is not None:
+                nodeStack.append(currNode)
 
         currNode.visitNode()
 
@@ -32,7 +41,11 @@ def DFS(parsedMaze, timeseries, startingNode, mazeClass):
             move += 1
             timelapse.append(parsedMaze)
 
+        if (prevNode.hasMoreChildren()):
+            nodeStack.append(prevNode)
+
         nodeStack.append(currNode)
+
 
     if timeseries:
         return (move, timelapse)
