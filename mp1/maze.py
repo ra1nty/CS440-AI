@@ -20,6 +20,7 @@ class Maze:
         WALL = '%'
         GOAL = '.'
         currChild = 0
+        weight = 0
 
         def __init__(self, x, y, parent=None, start=False, end=False):
             self.coordinates['x'] = x
