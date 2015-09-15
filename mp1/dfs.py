@@ -4,7 +4,7 @@ from maze import Maze
 
 MAZES = "./mazes/"
 
-def DFS(parsedMaze, timeseries, startingNode):
+def DFS(parsedMaze, timeseries, startingNode, mazeClass):
     nodeStack = list()
 
     if (timeseries):
@@ -17,7 +17,7 @@ def DFS(parsedMaze, timeseries, startingNode):
     currNode = startingNode
 
     while (not currNode.isEnding()):
-        currNode.addChildren(parsedMaze)
+        currNode.addChildren(parsedMaze, mazeClass)
         currNode = currNode.getNextChild()
 
         while (currNode == None):
