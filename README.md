@@ -5,6 +5,7 @@
 - BFS (Mike)
 - Greedy best first search (Jeff)
 - A star (Annie)
+
 ##1.2 Penalizing turns
 ###A star
 - forward movement has cost 2 and any turn has cost 1 (Jeff)
