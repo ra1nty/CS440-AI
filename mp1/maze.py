@@ -21,6 +21,9 @@ class Maze:
         GOAL = '.'
         currChild = 0
         weight = 0
+        g = 0
+        h = 0
+        f = 0
 
         def __init__(self, x, y, parent=None, start=False, end=False):
             self.coordinates['x'] = x
