@@ -1,7 +1,7 @@
 import sys
 import os
 
-def makeSearchNode(x, y, parent=None, start=False, end=False):
+def makeSearchNode(y, x, parent=None, start=False, end=False):
     temp = searchNode(x=x, y=y, start=start, end=end, parent=parent)
     return temp
 
