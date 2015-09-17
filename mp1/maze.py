@@ -90,6 +90,9 @@ class searchNode:
     GOAL = '.'
     currChild = 0
     weight = 0
+    g = 0
+    h = 0
+    f = 0
 
 class Maze:
 
@@ -99,7 +102,6 @@ class Maze:
     startingCoord = {}
     endingCoord = {}
 
-    
     def __init__(self, filename):
         maze = self.__loadFile(filename)
         self.parsedMaze = self.__parseMaze(maze)
