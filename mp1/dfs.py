@@ -1,6 +1,7 @@
 import sys
 import os
 from maze import Maze
+import pdb
 
 MAZES = "./mazes/"
 
@@ -16,10 +17,13 @@ def DFS(parsedMaze, timeseries, startingNode):
     nodeStack.append(startingNode)
     currNode = startingNode
 
+    pdb.set_trace()
     while (not currNode.isEnding()):
+        currNode.printNode()
         currNode.addChildren(parsedMaze)
         prevNode = currNode
         currNode = currNode.getNextChild()
+
 
         while (currNode == None):
             if (len(nodeStack) == 0):
