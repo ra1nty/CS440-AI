@@ -40,8 +40,15 @@ def DFS(parsedMaze, timeseries, startingNode):
         currNode.visitNode()
 
         if timeseries:
+
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
             move += 1
+
+            for row in parsedMaze:
+                for elem in row:
+                    print elem,
+                print '\n',
+            sleep(0.2)
             timelapse.append(parsedMaze)
 
         if (prevNode.hasMoreChildren()):
@@ -57,6 +64,7 @@ def DFS(parsedMaze, timeseries, startingNode):
 
 def main():
     argv = sys.argv
+
     m = Maze(MAZES + argv[1] + '.maze')
     solved = m.solveUsing(DFS, True)
 

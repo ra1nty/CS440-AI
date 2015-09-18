@@ -64,20 +64,22 @@ class searchNode:
         # Right
         y = self.coordinates['y']
         x = self.coordinates['x']
+        temp = None
 
         if str(dict(x=x+1, y=y)) in self.allNodes:
             if not self.allNodes[str(dict(x=x+1, y=y))].visited:
                 temp = self.allNodes[str(dict(x=x+1, y=y))]
+                self.children.append(temp)
 
-            self.children.append(temp)
             self.right = temp
         elif maze[y][x + 1] != self.WALL and self.parent != dict(x=x+1, y=y):
             if maze[y][x + 1] == self.GOAL:
                 temp = makeSearchNode(y, x + 1, parent=self, end=True)
+                self.children.append(temp)
             else:
                 temp = makeSearchNode(y, x + 1, parent=self)
+                self.children.append(temp)
 
-            self.children.append(temp)
             self.right = temp
         else:
             self.right = None
@@ -90,10 +92,11 @@ class searchNode:
         elif maze[y + 1][x] != self.WALL and self.parent != dict(x=x, y=y+1):
             if maze[y + 1][x] == self.GOAL:
                 temp = makeSearchNode(y + 1, x, parent=self, end=True)
+                self.children.append(temp)
             else:
                 temp = makeSearchNode(y + 1, x, parent=self)
+                self.children.append(temp)
 
-            self.children.append(temp)
             self.down = temp
         else:
             self.down = None
@@ -102,16 +105,17 @@ class searchNode:
         if str(dict(x=x-1, y=y)) in self.allNodes:
             if not self.allNodes[str(dict(x=x-1, y=y))].visited:
                 temp = self.allNodes[str(dict(x=x-1, y=y))]
+                self.children.append(temp)
 
-            self.children.append(temp)
             self.left = temp
         elif maze[y][x - 1] != self.WALL and self.parent != dict(x=x-1, y=y):
             if maze[y][x - 1] == self.GOAL:
                 temp = makeSearchNode(y, x - 1, parent=self, end=True)
+                self.children.append(temp)
             else:
                 temp = makeSearchNode(y, x - 1, parent=self)
+                self.children.append(temp)
 
-            self.children.append(temp)
             self.left = temp
         else:
             self.left = None
@@ -120,14 +124,16 @@ class searchNode:
         if str(dict(x=x, y=y-1)) in self.allNodes:
             if not self.allNodes[str(dict(x=x, y=y-1))].visited:
                 temp = self.allNodes[str(dict(x=x, y=y-1))]
+                self.children.append(temp)
 
             self.up = temp
-            self.children.append(temp)
         elif maze[y - 1][x] != self.WALL and self.parent != dict(x=x, y=y-1):
             if maze[y - 1][x] == self.GOAL:
                 temp = makeSearchNode(y - 1, x, parent=self, end=True)
+                self.children.append(temp)
             else:
                 temp = makeSearchNode(y - 1, x, parent=self)
+                self.children.append(temp)
         else:
             self.up = None
 
