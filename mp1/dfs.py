@@ -19,7 +19,6 @@ def DFS(parsedMaze, timeseries, startingNode):
     currNode = startingNode
 
     while (not currNode.isEnding()):
-        currNode.printNode()
         currNode.addChildren(parsedMaze)
         prevNode = currNode
         currNode = currNode.getNextChild()
@@ -42,14 +41,6 @@ def DFS(parsedMaze, timeseries, startingNode):
 
         if timeseries:
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
-            for row in parsedMaze:
-                for elem in row:
-                    print elem,
-                print '\n',
-            print ""
-
-            sleep(.01)
-
             move += 1
             timelapse.append(parsedMaze)
 
@@ -65,13 +56,9 @@ def DFS(parsedMaze, timeseries, startingNode):
         return None
 
 def main():
-    files = os.listdir(MAZES)
-
-    for f in files:
-        m = Maze(MAZES + 'big.maze')
-        solved = m.solveUsing(DFS, True)
-
-    print solved
+    argv = sys.argv
+    m = Maze(MAZES + argv[1] + '.maze')
+    solved = m.solveUsing(DFS, True)
 
 if __name__ == "__main__":
     main()
