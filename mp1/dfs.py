@@ -60,6 +60,11 @@ def main():
     m = Maze(MAZES + argv[1] + '.maze')
     solved = m.solveUsing(DFS, True)
 
+    with open(argv[1] + '.out', 'w') as f:
+        for frame in solved:
+            f.write(str(frame))
+            f.write('\n')
+
 if __name__ == "__main__":
     main()
 
