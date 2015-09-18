@@ -2,6 +2,7 @@ import sys
 import os
 from maze import Maze
 import pdb
+from time import sleep
 
 MAZES = "./mazes/"
 
@@ -17,7 +18,6 @@ def DFS(parsedMaze, timeseries, startingNode):
     nodeStack.append(startingNode)
     currNode = startingNode
 
-    pdb.set_trace()
     while (not currNode.isEnding()):
         currNode.printNode()
         currNode.addChildren(parsedMaze)
@@ -42,6 +42,14 @@ def DFS(parsedMaze, timeseries, startingNode):
 
         if timeseries:
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
+            for row in parsedMaze:
+                for elem in row:
+                    print elem,
+                print '\n',
+            print ""
+
+            sleep(.2)
+
             move += 1
             timelapse.append(parsedMaze)
 
