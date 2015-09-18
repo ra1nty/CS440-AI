@@ -1,9 +1,6 @@
 import sys
 import os
-
-def makeSearchNode(y, x, parent=None, start=False, end=False):
-    temp = searchNode(x=x, y=y, start=start, end=end, parent=parent)
-    return temp
+from Queue import PriorityQueue
 
 class searchNode:
 
@@ -11,7 +8,14 @@ class searchNode:
     GOAL = '.'
     allNodes = dict()
 
-    def __init__(self, x, y, parent=None, start=False, end=False):
+    heuristic = None
+    comparisonFunc = None
+
+    frontierQueue = PriorityQueue()
+    frontier = dict()
+    destination = dict()
+
+    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None):
         self.coordinates = dict()
         self.coordinates['x'] = x
         self.coordinates['y'] = y
@@ -25,7 +29,15 @@ class searchNode:
         self.g = 0
         self.h = 0
         self.f = 0
+        self.destination = dest
         self.allNodes[str(self.coordinates)] = self
+        self.heuristic = heuristic
+        self.comparisonFunc = comparisonFunc
+
+        if parent is not None:
+            self.heuristic = parent.heuristic
+            self.comparisonFunc = parent.comparisonFunc
+            self.destination = parent.destination
 
     def visitNode(self):
         self.visited = True
@@ -40,6 +52,14 @@ class searchNode:
             temp = self.children[self.currChild]
             self.currChild += 1
         return temp
+
+    def setHeuristic(self, heuristic, comparisonFunc):
+        # Heuristic prototype
+        # def heuristic(curr, end)
+        # Curr format: { 'x': __, 'y': __ }
+
+        self.heuristic = heuristic
+        self.compare = comparisonFunc
 
     def hasMoreChildren(self):
         return self.currChild < len(self.children)
@@ -57,8 +77,15 @@ class searchNode:
 
         return (self.coordinates != coord)
 
+    def __cmp__(self, other):
+        if (self.heuristic is not None):
+            return self.comparisonFunc(self.heuristic(self.coordinates, self.destination), self.heuristic(other.coordinates, self.destination))
+
     def printNode(self):
         print "%s; visited %s" % (str(self.coordinates), self.visited)
+
+    def nextBestNode(self):
+        return self.frontierQueue.get()
 
     def addChildren(self, maze):
         # Right
@@ -74,10 +101,10 @@ class searchNode:
             self.right = temp
         elif maze[y][x + 1] != self.WALL and self.parent != dict(x=x+1, y=y):
             if maze[y][x + 1] == self.GOAL:
-                temp = makeSearchNode(y, x + 1, parent=self, end=True)
+                temp = searchNode(y, x + 1, parent=self, end=True)
                 self.children.append(temp)
             else:
-                temp = makeSearchNode(y, x + 1, parent=self)
+                temp = searchNode(y, x + 1, parent=self)
                 self.children.append(temp)
 
             self.right = temp
@@ -87,14 +114,16 @@ class searchNode:
         # Down
         if str(dict(x=x, y=y+1)) in self.allNodes:
             if not self.allNodes[str(dict(x=x, y=y+1))].visited:
-                self.children.append(self.allNodes[str(dict(x=x, y=y+1))])
+                temp = self.allNodes[str(dict(x=x, y=y+1))]
+                self.children.append(temp)
 
+            self.down = temp
         elif maze[y + 1][x] != self.WALL and self.parent != dict(x=x, y=y+1):
             if maze[y + 1][x] == self.GOAL:
-                temp = makeSearchNode(y + 1, x, parent=self, end=True)
+                temp = searchNode(y + 1, x, parent=self, end=True)
                 self.children.append(temp)
             else:
-                temp = makeSearchNode(y + 1, x, parent=self)
+                temp = searchNode(y + 1, x, parent=self)
                 self.children.append(temp)
 
             self.down = temp
@@ -110,10 +139,10 @@ class searchNode:
             self.left = temp
         elif maze[y][x - 1] != self.WALL and self.parent != dict(x=x-1, y=y):
             if maze[y][x - 1] == self.GOAL:
-                temp = makeSearchNode(y, x - 1, parent=self, end=True)
+                temp = searchNode(y, x - 1, parent=self, end=True)
                 self.children.append(temp)
             else:
-                temp = makeSearchNode(y, x - 1, parent=self)
+                temp = searchNode(y, x - 1, parent=self)
                 self.children.append(temp)
 
             self.left = temp
@@ -129,13 +158,19 @@ class searchNode:
             self.up = temp
         elif maze[y - 1][x] != self.WALL and self.parent != dict(x=x, y=y-1):
             if maze[y - 1][x] == self.GOAL:
-                temp = makeSearchNode(y - 1, x, parent=self, end=True)
+                temp = searchNode(y - 1, x, parent=self, end=True)
                 self.children.append(temp)
             else:
-                temp = makeSearchNode(y - 1, x, parent=self)
+                temp = searchNode(y - 1, x, parent=self)
                 self.children.append(temp)
         else:
             self.up = None
+
+        if self.heuristic is not None:
+            for child in self.children:
+                if str(child.coordinates) not in self.frontier:
+                    self.frontier[str(child.coordinates)] = child
+                    self.frontierQueue.put(child)
 
 class Maze:
 
@@ -184,13 +219,16 @@ class Maze:
         print "Starting (%d, %d)" % (self.startingCoord['x'], self.startingCoord['y'])
         print "Ending (%d, %d)" % (self.endingCoord['x'], self.endingCoord['y'])
 
-    def solveUsing(self, method=None, timeseries=False):
+    def solveUsing(self, method=None, timeseries=False, heuristic=None, comparisonFunc=None):
         if method != None:
             return method(self.parsedMaze,
                           timeseries,
                           searchNode(x=self.startingCoord['x'],
                                      y=self.startingCoord['y'],
-                                     start=True))
+                                     start=True,
+                                     heuristic=heuristic,
+                                     comparisonFunc=comparisonFunc,
+                                     dest=self.endingCoord))
         else:
             return None
 
