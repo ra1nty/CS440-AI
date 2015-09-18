@@ -8,6 +8,15 @@ MAZES = "./mazes/"
 def BFS(parsedMaze, timeseries, startingNode):
     q = Queue.Queue()
     q.put(startingNode)
+    t = startingNode
+    while(not q.empty() and not t.isEnding()):
+        t = q.get()
+        t.visitNode()
+        t.addChildren(parsedMaze)
+
+        for n in t.children:
+            print "test"
+
 
 
     return None
