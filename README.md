@@ -1,9 +1,9 @@
 #AI MP 
 
 ##1.1 Basic Pathfinding 
-- DFS (Jeff)
+- DFS (Jeff) (Done)
 - BFS (Mike)
-- Greedy best first search (Jeff)
+- Greedy best first search (Jeff) (Done)
 - A star (Annie)
 
 ##1.2 Penalizing turns
