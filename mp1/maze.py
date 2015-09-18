@@ -74,7 +74,7 @@ class searchNode:
             else:
                 self.children.append(makeSearchNode(y, x + 1, parent=self))
 
-        # Down        
+        # Down
         if str(dict(x=x, y=y+1)) in self.allNodes:
             if not self.allNodes[str(dict(x=x, y=y+1))].visited:
                 self.children.append(self.allNodes[str(dict(x=x, y=y+1))])
@@ -110,8 +110,6 @@ class Maze:
     WALL = '%'
     ENDING = '.'
     STARTING = 'P'
-    startingCoord = {}
-    endingCoord = {}
 
     def __init__(self, filename):
         maze = self.__loadFile(filename)
