@@ -46,7 +46,7 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved = m.solveUsing(greedyBFS, True, euclideanDist, comparisonFunc)
+    solved = m.solveUsing(greedyBFS, True, manhattanDist, comparisonFunc)
 
 if __name__ == "__main__":
     main()
