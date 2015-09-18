@@ -2,6 +2,7 @@ import sys
 import os
 from maze import Maze
 import pdb
+from time import sleep
 
 MAZES = "./mazes/"
 
@@ -17,9 +18,7 @@ def DFS(parsedMaze, timeseries, startingNode):
     nodeStack.append(startingNode)
     currNode = startingNode
 
-    pdb.set_trace()
     while (not currNode.isEnding()):
-        currNode.printNode()
         currNode.addChildren(parsedMaze)
         prevNode = currNode
         currNode = currNode.getNextChild()
@@ -33,7 +32,7 @@ def DFS(parsedMaze, timeseries, startingNode):
             currNode = prevNode.getNextChild()
 
             if (prevNode.hasMoreChildren()):
-                nodeStack.append(tempNode)
+                nodeStack.append(prevNode)
 
             if currNode is not None:
                 nodeStack.append(currNode)
@@ -41,9 +40,16 @@ def DFS(parsedMaze, timeseries, startingNode):
         currNode.visitNode()
 
         if timeseries:
+
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
             move += 1
             timelapse.append(parsedMaze)
+            #for row in parsedMaze:
+            #    for elem in row:
+            #        print elem,
+            #    print '\n',
+
+            #sleep(0.1)
 
         if (prevNode.hasMoreChildren()):
             nodeStack.append(prevNode)
@@ -57,13 +63,15 @@ def DFS(parsedMaze, timeseries, startingNode):
         return None
 
 def main():
-    files = os.listdir(MAZES)
+    argv = sys.argv
 
-    for f in files:
-        m = Maze(MAZES + f)
-        solved = m.solveUsing(DFS, True)
+    m = Maze(MAZES + argv[1] + '.maze')
+    solved = m.solveUsing(DFS, True)
 
-    print solved
+    with open(argv[1] + '.out', 'w') as f:
+        for frame in solved:
+            f.write(str(frame))
+            f.write('\n')
 
 if __name__ == "__main__":
     main()
