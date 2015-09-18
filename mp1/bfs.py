@@ -20,18 +20,20 @@ def BFS(parsedMaze, timeseries, startingNode):
 
     while(not q.empty()):
         t = q.get()
-        t.visitNode()
         solvedMaze[t.coordinates['y']][t.coordinates['x']] = '~'
+       # printMaze(solvedMaze)
         if t.end: # found solution
             solvedMaze[t.coordinates['y']][t.coordinates['x']] = '.'
             solvedMaze[starty][startx] = 'P'
-
             return solvedMaze
         else:
             t.addChildren(parsedMaze)
             for n in t.children:
-                if n is not None and not n.visited:
-                    q.put(n)
+                if n is not None:
+                    posx = n.coordinates['x']
+                    posy = n.coordinates['y']
+                    if solvedMaze[posy][posx] != '~':
+                        q.put(n)
 
 
     return False
@@ -40,17 +42,19 @@ def main():
     files = os.listdir(MAZES)
 
    # for f in files:
-    m = Maze(MAZES + "medium.maze")
+    m = Maze(MAZES + "big.maze")
     solved = m.solveUsing(BFS, True)
 
     if not solved:
         return "No solution"
     else:
-         for row in solved:
-            for elem in row:
-                print elem,
-            print '\n',
+        printMaze(solved)
 
 
+def printMaze(maze):
+    for row in maze:
+        for elem in row:
+            print elem,
+        print '\n',
 
 main()
