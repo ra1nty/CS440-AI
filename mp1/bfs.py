@@ -4,6 +4,12 @@ import Queue
 from maze import Maze
 
 MAZES = "./mazes/"
+# maze constants to improve readability
+
+RIGHT = 0
+DOWN = 1
+LEFT = 2
+UP = 3
 
 def BFS(parsedMaze, timeseries, startingNode):
     q = Queue.Queue()
@@ -15,7 +21,12 @@ def BFS(parsedMaze, timeseries, startingNode):
         t.addChildren(parsedMaze)
 
         for n in t.children:
-            print "test"
+            if n is not None and not n.visited:
+                n.visitNode()
+                q.put(n)
+
+
+
 
 
 
@@ -26,6 +37,7 @@ def main():
 
     for f in files:
         m = Maze(MAZES + f)
+        print f
         solved = m.solveUsing(BFS, True)
 
     if solved is None:
