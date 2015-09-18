@@ -6,22 +6,21 @@ from maze import Maze
 MAZES = "./mazes/"
 
 # maze constants to improve readability
-RIGHT = 0
-DOWN = 1
-LEFT = 2
-UP = 3
 
 def BFS(parsedMaze, timeseries, startingNode):
     solvedMaze = parsedMaze
     q = Queue.Queue()
     q.put(startingNode)
     startx = startingNode.coordinates['x']
-    starty = startingNode.coordinates['y']
 
+    starty = startingNode.coordinates['y']
+    printMaze(parsedMaze)
+    print startx
+    print starty
     while(not q.empty()):
+        print "start"
         t = q.get()
         solvedMaze[t.coordinates['y']][t.coordinates['x']] = '~'
-       # printMaze(solvedMaze)
         if t.end: # found solution
             solvedMaze[t.coordinates['y']][t.coordinates['x']] = '.'
             solvedMaze[starty][startx] = 'P'
@@ -30,6 +29,7 @@ def BFS(parsedMaze, timeseries, startingNode):
             t.addChildren(parsedMaze)
             for n in t.children:
                 if n is not None:
+                    print "child"
                     posx = n.coordinates['x']
                     posy = n.coordinates['y']
                     if solvedMaze[posy][posx] != '~':
@@ -43,7 +43,7 @@ def main():
 
    # for f in files:
     m = Maze(MAZES + "big.maze")
-    solved = m.solveUsing(BFS, True)
+    solved = m.solveUsing(method=BFS, timeseries=True)
 
     if not solved:
         return "No solution"
