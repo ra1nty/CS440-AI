@@ -4,46 +4,53 @@ import Queue
 from maze import Maze
 
 MAZES = "./mazes/"
-# maze constants to improve readability
 
+# maze constants to improve readability
 RIGHT = 0
 DOWN = 1
 LEFT = 2
 UP = 3
 
 def BFS(parsedMaze, timeseries, startingNode):
+    solvedMaze = parsedMaze
     q = Queue.Queue()
     q.put(startingNode)
-    t = startingNode
-    while(not q.empty() and not t.isEnding()):
+    startx = startingNode.coordinates['x']
+    starty = startingNode.coordinates['y']
+
+    while(not q.empty()):
         t = q.get()
         t.visitNode()
-        t.addChildren(parsedMaze)
+        solvedMaze[t.coordinates['y']][t.coordinates['x']] = '~'
+        if t.end: # found solution
+            solvedMaze[t.coordinates['y']][t.coordinates['x']] = '.'
+            solvedMaze[starty][startx] = 'P'
 
-        for n in t.children:
-            if n is not None and not n.visited:
-                n.visitNode()
-                q.put(n)
+            return solvedMaze
+        else:
+            t.addChildren(parsedMaze)
+            for n in t.children:
+                if n is not None and not n.visited:
+                    q.put(n)
 
 
-
-
-
-
-    return None
+    return False
 
 def main():
     files = os.listdir(MAZES)
 
-    for f in files:
-        m = Maze(MAZES + f)
-        print f
-        solved = m.solveUsing(BFS, True)
+   # for f in files:
+    m = Maze(MAZES + "medium.maze")
+    solved = m.solveUsing(BFS, True)
 
-    if solved is None:
+    if not solved:
         return "No solution"
     else:
-        print solved
+         for row in solved:
+            for elem in row:
+                print elem,
+            print '\n',
+
 
 
 main()
