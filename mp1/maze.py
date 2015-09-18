@@ -68,6 +68,10 @@ class searchNode:
                 self.children.append(makeSearchNode(y, x + 1, parent=self, end=True))
             else:
                 self.children.append(makeSearchNode(y, x + 1, parent=self))
+        elif maze[y][x + 1] == self.WALL:
+            self.children.append(None)
+
+
 
         # Down
         if maze[y + 1][x] != self.WALL and self.parent != dict(x=x, y=y+1):
@@ -75,6 +79,8 @@ class searchNode:
                 self.children.append(makeSearchNode(y + 1, x, parent=self, end=True))
             else:
                 self.children.append(makeSearchNode(y + 1, x, parent=self))
+        elif maze[y + 1][x] == self.WALL:
+            self.children.append(None)
 
         # Left
         if maze[y][x - 1] != self.WALL and self.parent != dict(x=x-1, y=y):
@@ -82,6 +88,8 @@ class searchNode:
                 self.children.append(makeSearchNode(y, x - 1, parent=self, end=True))
             else:
                 self.children.append(makeSearchNode(y, x - 1, parent=self))
+        elif maze[y][x - 1] == self.WALL:
+            self.children.append(None)
 
         # Up
         if maze[y - 1][x] != self.WALL and self.parent != dict(x=x, y=y-1):
@@ -89,6 +97,8 @@ class searchNode:
                 self.children.append(makeSearchNode(y - 1, x, parent=self, end=True))
             else:
                 self.children.append(makeSearchNode(y - 1, x, parent=self))
+        elif maze[y - 1][x] == self.WALL:
+            self.children.append(None)
 
 class Maze:
 
