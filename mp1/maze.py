@@ -16,7 +16,6 @@ class searchNode:
     destination = dict()
 
     def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None):
-
         self.coordinates = dict()
         self.coordinates['x'] = x
         self.coordinates['y'] = y
