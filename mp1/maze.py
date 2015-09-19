@@ -235,5 +235,3 @@ class Maze:
 if __name__ == "__main__":
     m = Maze("./mazes/big.maze")
     m.printMaze()
-
-
