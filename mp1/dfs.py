@@ -44,17 +44,28 @@ def DFS(parsedMaze, timeseries, startingNode):
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
             move += 1
             timelapse.append(parsedMaze)
-            #for row in parsedMaze:
-            #    for elem in row:
-            #        print elem,
-            #    print '\n',
+            for row in parsedMaze:
+                for elem in row:
+                    print elem,
+                print '\n',
 
-            #sleep(0.1)
+            sleep(0.1)
 
         if (prevNode.hasMoreChildren()):
             nodeStack.append(prevNode)
 
         nodeStack.append(currNode)
+
+    for node in nodeStack:
+        parsedMaze[node.coordinates['y']][node.coordinates['x']] = 'x'
+        move += 1
+        timelapse.append(parsedMaze)
+        for row in parsedMaze:
+            for elem in row:
+                print elem,
+            print '\n',
+
+        sleep(0.1)
 
 
     if timeseries:

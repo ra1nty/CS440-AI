@@ -53,6 +53,17 @@ class searchNode:
             self.currChild += 1
         return temp
 
+    def getNextBestChildNode(self):
+        bestHeuristic = 0
+        bestChild = None
+
+        for child in self.children:
+            temp = self.heuristic(self.coordinates, self.destination)
+            if self.comparisonFunc(temp, bestHeuristic):
+                bestChild = child
+
+        return bestChild
+
     def setHeuristic(self, heuristic, comparisonFunc):
         # Heuristic prototype
         # def heuristic(curr, end)
