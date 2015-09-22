@@ -39,10 +39,10 @@ class searchNode:
             self.comparisonFunc = parent.comparisonFunc
             self.destination = parent.destination
 
-    def visitNode(self):
+    def visitNode(self):        #marks node as visited
         self.visited = True
 
-    def isEnding(self):
+    def isEnding(self):     #returns the ending point
         return self.end
 
     def getNextChild(self):
@@ -246,5 +246,3 @@ class Maze:
 if __name__ == "__main__":
     m = Maze("./mazes/big.maze")
     m.printMaze()
-
-
