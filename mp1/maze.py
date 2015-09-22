@@ -45,7 +45,7 @@ class searchNode:
     def isEnding(self):     #returns the ending point
         return self.end
 
-    def getNextChild(self):
+    def getNextChild(self):     #returns a children of the node
         if self.currChild >= len(self.children):
             temp = None
         else:
@@ -61,17 +61,17 @@ class searchNode:
         self.heuristic = heuristic
         self.compare = comparisonFunc
 
-    def hasMoreChildren(self):
+    def hasMoreChildren(self):      #checks if node still has unexplored children
         return self.currChild < len(self.children)
 
-    def __eq__(self, coord):
+    def __eq__(self, coord):    #equality function
         if coord is None:
             return False
 
         return (self.coordinates['x'] == coord['x'] and
                 self.coordinates['y'] == coord['y'])
 
-    def __ne__(self, coord):
+    def __ne__(self, coord):    #not equal function
         if coord is None:
             return False
 
@@ -87,7 +87,7 @@ class searchNode:
     def nextBestNode(self):
         return self.frontierQueue.get()
 
-    def addChildren(self, maze):
+    def addChildren(self, maze):    # adds 4 children to current node in all 4 directions 
         # Right
         y = self.coordinates['y']
         x = self.coordinates['x']
