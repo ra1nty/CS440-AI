@@ -22,16 +22,16 @@ def crossDist(curr, endCoord):
     dx2 = curr.starting['x'] - endCoord['x']
     dy2 = curr.starting['y'] - endCoord['y']
 
-    return abs(dx1 * dy2 - dx2 * dy1)
+    return abs(dx1 * dy2 - dx2 * dy1) + curr.cost
 
 def comparisonFunc(comp, best):
     return comp > best
 
 def costAssignment(parent, child):
     if (parent.currDirection == child.currDirection):
-        return parent.cost + 2
-    else:
         return parent.cost + 1
+    else:
+        return parent.cost + 2
 
 def A_Star(parsedMaze, timeseries, startingNode):
 
