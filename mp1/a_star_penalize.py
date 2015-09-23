@@ -3,11 +3,18 @@ import os
 import sys
 import pdb
 from time import sleep
+from math import sqrt
 
 MAZES = './mazes/'
 
 def manhattanDist(curr, endCoord):
     return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']) + curr.cost
+
+def euclideanDist(curr, endCoord):
+    return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
+
+def chebyshevDist(curr, endCoord):
+    return max(abs(curr.coordinates['x'] - endCoord['x']), abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
 
 def comparisonFunc(comp, best):
     return comp > best
