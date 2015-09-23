@@ -49,7 +49,7 @@ class searchNode:
     frontier = dict()
     destination = dict()
 
-    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None, direction=None, costAssign=None):
+    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None, direction=None, costAssign=None, starting=None):
         self.coordinates = dict()
         self.coordinates['x'] = x
         self.coordinates['y'] = y
@@ -63,6 +63,7 @@ class searchNode:
         self.g = 0
         self.h = 0
         self.f = 0
+        self.starting = starting
         self.destination = dest
         self.allNodes[str(self.coordinates)] = self
         self.heuristic = heuristic
@@ -75,6 +76,7 @@ class searchNode:
             self.heuristic = parent.heuristic
             self.comparisonFunc = parent.comparisonFunc
             self.destination = parent.destination
+            self.starting = parent.starting
             self.costAssign = parent.costAssign
             self.cost = parent.cost
 
@@ -309,7 +311,8 @@ class Maze:
                                      heuristic=heuristic,
                                      comparisonFunc=comparisonFunc,
                                      dest=self.endingCoord,
-                                     costAssign=costAssign))
+                                     costAssign=costAssign,
+                                     starting=self.startingCoord))
         else:
             return None
 

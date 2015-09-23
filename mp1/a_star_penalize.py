@@ -16,6 +16,14 @@ def euclideanDist(curr, endCoord):
 def chebyshevDist(curr, endCoord):
     return max(abs(curr.coordinates['x'] - endCoord['x']), abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
 
+def crossDist(curr, endCoord):
+    dx1 = curr.coordinates['x'] - endCoord['x']
+    dy1 = curr.coordinates['y'] - endCoord['y']
+    dx2 = curr.starting['x'] - endCoord['x']
+    dy2 = curr.starting['y'] - endCoord['y']
+
+    return abs(dx1 * dy2 - dx2 * dy1)
+
 def comparisonFunc(comp, best):
     return comp > best
 
@@ -73,7 +81,7 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(A_Star, timeseries=True, heuristic=manhattanDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
+    m.solveUsing(A_Star, timeseries=True, heuristic=crossDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
 
 if __name__ == "__main__":
     main()
