@@ -92,6 +92,16 @@ class searchNode:
         if (self.heuristic is not None):
             return self.comparisonFunc(self.heuristic(self.coordinates, self.destination), self.heuristic(other.coordinates, self.destination))
 
+    def getTraversal(self):
+        traversal = list()
+        currNode = self
+
+        while (currNode is not None):
+            traversal.append(currNode)
+            currNode = currNode.parent
+
+        return traversal
+
     def printNode(self):
         print "%s; visited %s" % (str(self.coordinates), self.visited)
 

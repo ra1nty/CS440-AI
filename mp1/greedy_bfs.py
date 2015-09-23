@@ -42,6 +42,20 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
 
             sleep(0.1)
 
+    traversed = currNode.getTraversal()
+
+    for currNode in traversed:
+        parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = 'X'
+        move += 1
+        timelapse.append(parsedMaze)
+
+        for row in parsedMaze:
+            for elem in row:
+                print elem,
+            print '\n',
+
+        sleep(0.1)
+
 def main():
     argv = sys.argv
 
