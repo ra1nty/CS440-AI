@@ -17,7 +17,6 @@ def A_Star(parsedMaze, timeSeries, startingNode):
         pass
 
 
-
 def main():
     argv = sys.argv
 

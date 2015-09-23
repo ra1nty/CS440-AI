@@ -6,16 +6,25 @@ class searchNode:
 
     WALL = '%'
     GOAL = '.'
+
+    LEFT = 0
+    UP = 1
+    RIGHT = 2
+    DOWN = 3
+
+    # Should probably use a set not a hash
     allNodes = dict()
 
+    # Heuristic and heuristic comparison function for deciding the priority queue
     heuristic = None
     comparisonFunc = None
 
+    # Shared queue and shared set of frontiers
     frontierQueue = PriorityQueue()
     frontier = dict()
     destination = dict()
 
-    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None):
+    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None, direction=None):
         self.coordinates = dict()
         self.coordinates['x'] = x
         self.coordinates['y'] = y
@@ -33,6 +42,7 @@ class searchNode:
         self.allNodes[str(self.coordinates)] = self
         self.heuristic = heuristic
         self.comparisonFunc = comparisonFunc
+        self.currDirection = direction
 
         if parent is not None:
             self.heuristic = parent.heuristic
@@ -122,10 +132,10 @@ class searchNode:
             self.right = temp
         elif maze[y][x + 1] != self.WALL and self.parent != dict(x=x+1, y=y):
             if maze[y][x + 1] == self.GOAL:
-                temp = searchNode(y, x + 1, parent=self, end=True)
+                temp = searchNode(y, x + 1, parent=self, end=True, direction=self.RIGHT)
                 self.children.append(temp)
             else:
-                temp = searchNode(y, x + 1, parent=self)
+                temp = searchNode(y, x + 1, parent=self, direction=self.RIGHT)
                 self.children.append(temp)
 
             self.right = temp
@@ -141,10 +151,10 @@ class searchNode:
             self.down = temp
         elif maze[y + 1][x] != self.WALL and self.parent != dict(x=x, y=y+1):
             if maze[y + 1][x] == self.GOAL:
-                temp = searchNode(y + 1, x, parent=self, end=True)
+                temp = searchNode(y + 1, x, parent=self, end=True, direction=self.DOWN)
                 self.children.append(temp)
             else:
-                temp = searchNode(y + 1, x, parent=self)
+                temp = searchNode(y + 1, x, parent=self, direction=self.DOWN)
                 self.children.append(temp)
 
             self.down = temp
@@ -160,10 +170,10 @@ class searchNode:
             self.left = temp
         elif maze[y][x - 1] != self.WALL and self.parent != dict(x=x-1, y=y):
             if maze[y][x - 1] == self.GOAL:
-                temp = searchNode(y, x - 1, parent=self, end=True)
+                temp = searchNode(y, x - 1, parent=self, end=True, direction=self.LEFT)
                 self.children.append(temp)
             else:
-                temp = searchNode(y, x - 1, parent=self)
+                temp = searchNode(y, x - 1, parent=self, direction=self.LEFT)
                 self.children.append(temp)
 
             self.left = temp
@@ -179,10 +189,10 @@ class searchNode:
             self.up = temp
         elif maze[y - 1][x] != self.WALL and self.parent != dict(x=x, y=y-1):
             if maze[y - 1][x] == self.GOAL:
-                temp = searchNode(y - 1, x, parent=self, end=True)
+                temp = searchNode(y - 1, x, parent=self, end=True, direction=self.UP)
                 self.children.append(temp)
             else:
-                temp = searchNode(y - 1, x, parent=self)
+                temp = searchNode(y - 1, x, parent=self, direction=self.UP)
                 self.children.append(temp)
         else:
             self.up = None
