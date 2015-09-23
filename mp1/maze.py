@@ -18,13 +18,14 @@ class searchNode:
     # Heuristic and heuristic comparison function for deciding the priority queue
     heuristic = None
     comparisonFunc = None
+    costAssign = None
 
     # Shared queue and shared set of frontiers
     frontierQueue = PriorityQueue()
     frontier = dict()
     destination = dict()
 
-    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None, direction=None):
+    def __init__(self, y, x, parent=None, start=False, end=False, heuristic=None, comparisonFunc=None, dest=None, direction=None, costAssign=None):
         self.coordinates = dict()
         self.coordinates['x'] = x
         self.coordinates['y'] = y
@@ -43,11 +44,15 @@ class searchNode:
         self.heuristic = heuristic
         self.comparisonFunc = comparisonFunc
         self.currDirection = direction
+        self.costAssign = costAssign
+        self.cost = 0
 
         if parent is not None:
             self.heuristic = parent.heuristic
             self.comparisonFunc = parent.comparisonFunc
             self.destination = parent.destination
+            self.costAssign = parent.costAssign
+            self.cost = parent.cost
 
     def visitNode(self):        #marks node as visited
         self.visited = True
@@ -100,7 +105,10 @@ class searchNode:
 
     def __cmp__(self, other):
         if (self.heuristic is not None):
-            return self.comparisonFunc(self.heuristic(self.coordinates, self.destination), self.heuristic(other.coordinates, self.destination))
+            return self.comparisonFunc(self.heuristic(self, self.destination), self.heuristic(other, self.destination))
+
+    def sameDirection(self, other):
+        return self.direction == other.direction
 
     def getTraversal(self):
         traversal = list()
@@ -138,6 +146,8 @@ class searchNode:
                 temp = searchNode(y, x + 1, parent=self, direction=self.RIGHT)
                 self.children.append(temp)
 
+            if self.costAssign is not None:
+                temp.cost = self.costAssign(self, temp)
             self.right = temp
         else:
             self.right = None
@@ -157,6 +167,8 @@ class searchNode:
                 temp = searchNode(y + 1, x, parent=self, direction=self.DOWN)
                 self.children.append(temp)
 
+            if self.costAssign is not None:
+                temp.cost = self.costAssign(self, temp)
             self.down = temp
         else:
             self.down = None
@@ -176,6 +188,8 @@ class searchNode:
                 temp = searchNode(y, x - 1, parent=self, direction=self.LEFT)
                 self.children.append(temp)
 
+            if self.costAssign is not None:
+                temp.cost = self.costAssign(self, temp)
             self.left = temp
         else:
             self.left = None
@@ -194,6 +208,10 @@ class searchNode:
             else:
                 temp = searchNode(y - 1, x, parent=self, direction=self.UP)
                 self.children.append(temp)
+
+            if self.costAssign is not None:
+                temp.cost = self.costAssign(self, temp)
+            self.up = temp
         else:
             self.up = None
 
@@ -250,7 +268,7 @@ class Maze:
         print "Starting (%d, %d)" % (self.startingCoord['x'], self.startingCoord['y'])
         print "Ending (%d, %d)" % (self.endingCoord['x'], self.endingCoord['y'])
 
-    def solveUsing(self, method=None, timeseries=False, heuristic=None, comparisonFunc=None):
+    def solveUsing(self, method=None, timeseries=False, heuristic=None, comparisonFunc=None, costAssign=None):
         if method != None:
             return method(self.parsedMaze,
                           timeseries,
@@ -259,7 +277,8 @@ class Maze:
                                      start=True,
                                      heuristic=heuristic,
                                      comparisonFunc=comparisonFunc,
-                                     dest=self.endingCoord))
+                                     dest=self.endingCoord,
+                                     costAssign=costAssign))
         else:
             return None
 

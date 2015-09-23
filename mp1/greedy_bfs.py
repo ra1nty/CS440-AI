@@ -7,11 +7,11 @@ from math import sqrt
 
 MAZES = './mazes/'
 
-def manhattanDist(curr, end):
-    return abs(curr['x'] - end['x']) + abs(curr['y'] - end['y'])
+def manhattanDist(curr, endCoord):
+    return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])
 
-def euclideanDist(curr, end):
-    return sqrt(abs(curr['x'] - end['x']) + abs(curr['y'] - end['y']))
+def euclideanDist(curr, endCoord):
+    return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']))
 
 def comparisonFunc(comp, best):
     return comp > best
