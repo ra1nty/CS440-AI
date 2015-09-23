@@ -1,6 +1,30 @@
+"""
+    @file maze.py
+    @last_edit 9/22/15
+    @description Contains code to parse and create searchnodes for CS 440 mazes
+"""
+
+
 import sys
 import os
 from Queue import PriorityQueue
+
+"""
+    @class searchNode
+    @methods constructor
+             visitNode - Marks the node as visited
+             isEnding - Returns a bool if currNode is end of maze
+             getNextChild - Gets next child from the list of children
+             getNextBestChildNode - Get the next best child node based on the heuristic passed in
+             setHeuristic - Set the heuristic function of the search
+             hasMoreChildren - Returns a bool if there are more children in the current search node
+             __cmp__ - runs the heuristic for priority queues
+             sameDirection - If the node is going in the same direction as the parent
+             getTraversal - returns a traversal from the current node to the parent
+             printNode - prints the values inside the node
+             nextBestNode - returns the next best node based on the heuristic
+             addChildren - Generates 4 children in the order right, down, left, up
+"""
 
 class searchNode:
 
@@ -220,6 +244,13 @@ class searchNode:
                 if str(child.coordinates) not in self.frontier:
                     self.frontier[str(child.coordinates)] = child
                     self.frontierQueue.put(child)
+
+"""
+    @class Maze
+    @methods Constructor - Accepts the .maze file
+             printMaze - Prints the maze in a nice formap
+             solveUsing - Solve maze using a method, passed in as a function pointer, can use a heuristic coupled with a comparisonFunction and a custom weight assigner (for A-Star)
+"""
 
 class Maze:
 
