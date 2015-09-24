@@ -87,7 +87,6 @@ class searchNode:
     def nextBestNode(self):
         return self.frontierQueue.get()
 
-    def addChildren(self, maze):    # adds 4 children to current node in all 4 directions 
         # Right
         y = self.coordinates['y']
         x = self.coordinates['x']
