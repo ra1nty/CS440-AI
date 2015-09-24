@@ -40,7 +40,7 @@ def ASTAR(parsedMaze, timeseries, startingNode):
         prev = path[curr]
         prev.visitNode()
         curr = prev
-    
+
 
 def main():
     argv = sys.argv
