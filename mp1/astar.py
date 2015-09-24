@@ -47,8 +47,8 @@ def ASTAR(parsedMaze, timeseries, startingNode):
       
     for row in parsedMaze:
             for elem in row:
-                print elem
-            print '\n'
+                print elem,
+            print '\n',
 
 
 def main():
