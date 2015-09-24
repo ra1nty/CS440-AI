@@ -21,7 +21,6 @@ def ASTAR(parsedMaze, timeseries, startingNode):
 
     while (not.frontier.empty()):
         curr = frontier.get()
-        curr.visitNode()
         expanded = expanded+1
 
             if curr == goal:
@@ -37,7 +36,6 @@ def ASTAR(parsedMaze, timeseries, startingNode):
                     frontier.put(cost, next)
                     path[next] = curr
 
-    parsedMaze[curr.coordinates['y']][curr.coordinates['x']] = '.'
     curr = next
     while (not path[curr] == None):
         prev = path[curr]
