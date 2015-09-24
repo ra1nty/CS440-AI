@@ -43,18 +43,17 @@ def ASTAR(parsedMaze, timeseries, startingNode):
         curr = prev
     print "Nodes expanded: %d", expanded
     print "Path cost of solution: %d", len(path)
+    for row in parsedMaze:
+            for elem in row:
+                print elem
+            print '\n'
 
 
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved = m.solveUsing(ASTAR, True)
-
-    with open(argv[1] + '.out', 'w') as f:
-        for frame in solved:
-            f.write(str(frame))
-            f.write('\n')
+    solved = m.solveUsing(ASTAR, True, heuristic=None, comparisonFunc=None, costAssign=None)
         
 
 if __name__ == "__main__":
