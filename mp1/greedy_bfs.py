@@ -42,11 +42,16 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
 
             sleep(0.1)
 
+    if timeseries:
+        return (move, timelapse)
+
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
     solved = m.solveUsing(greedyBFS, True, manhattanDist, comparisonFunc)
+
+    print solved[0]
 
 if __name__ == "__main__":
     main()
