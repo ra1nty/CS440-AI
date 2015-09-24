@@ -1,22 +1,39 @@
 from maze import Maze
-import sys
 import os
-from time import sleep
+import sys
 import pdb
+from time import sleep
 from math import sqrt
 
 MAZES = './mazes/'
 
 def manhattanDist(curr, endCoord):
-    return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])
+    return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']) + curr.cost
 
 def euclideanDist(curr, endCoord):
-    return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']))
+    return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
+
+def chebyshevDist(curr, endCoord):
+    return max(abs(curr.coordinates['x'] - endCoord['x']), abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
+
+def crossDist(curr, endCoord):
+    dx1 = curr.coordinates['x'] - endCoord['x']
+    dy1 = curr.coordinates['y'] - endCoord['y']
+    dx2 = curr.starting['x'] - endCoord['x']
+    dy2 = curr.starting['y'] - endCoord['y']
+
+    return abs(dx1 * dy2 - dx2 * dy1) + curr.cost
 
 def comparisonFunc(comp, best):
     return comp > best
 
-def greedyBFS(parsedMaze, timeseries, startingNode):
+def costAssignment(parent, child):
+    if (parent.currDirection == child.currDirection):
+        return parent.cost + 1
+    else:
+        return parent.cost + 2
+
+def A_Star(parsedMaze, timeseries, startingNode):
 
     currNode = startingNode
     move = 0
@@ -58,11 +75,13 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
 
     print len(traversed)
 
+
+
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved = m.solveUsing(greedyBFS, True, euclideanDist, comparisonFunc)
+    m.solveUsing(A_Star, timeseries=True, heuristic=crossDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
 
 if __name__ == "__main__":
     main()
