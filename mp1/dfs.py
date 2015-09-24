@@ -56,17 +56,19 @@ def DFS(parsedMaze, timeseries, startingNode):
 
         nodeStack.append(currNode)
 
-    for node in nodeStack:
-        parsedMaze[node.coordinates['y']][node.coordinates['x']] = 'x'
+    traversed = currNode.getTraversal()
+
+    for currNode in traversed:
+        parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = 'X'
         move += 1
         timelapse.append(parsedMaze)
+
         for row in parsedMaze:
             for elem in row:
                 print elem,
             print '\n',
 
         sleep(0.1)
-
 
     if timeseries:
         return (move, timelapse)

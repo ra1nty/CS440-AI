@@ -7,11 +7,11 @@ from math import sqrt
 
 MAZES = './mazes/'
 
-def manhattanDist(curr, end):
-    return abs(curr['x'] - end['x']) + abs(curr['y'] - end['y'])
+def manhattanDist(curr, endCoord):
+    return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])
 
-def euclideanDist(curr, end):
-    return sqrt(abs(curr['x'] - end['x']) + abs(curr['y'] - end['y']))
+def euclideanDist(curr, endCoord):
+    return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']))
 
 def comparisonFunc(comp, best):
     return comp > best
@@ -42,14 +42,27 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
 
             sleep(0.1)
 
-    if timeseries:
-        return (move, timelapse)
+    traversed = currNode.getTraversal()
+
+    for currNode in traversed:
+        parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = 'X'
+        move += 1
+        timelapse.append(parsedMaze)
+
+        for row in parsedMaze:
+            for elem in row:
+                print elem,
+            print '\n',
+
+        sleep(0.1)
+
+    print len(traversed)
 
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved = m.solveUsing(greedyBFS, True, manhattanDist, comparisonFunc)
+    solved = m.solveUsing(greedyBFS, True, euclideanDist, comparisonFunc)
 
     print solved[0]
 
