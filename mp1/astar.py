@@ -17,9 +17,12 @@ def ASTAR(parsedMaze, timeseries, startingNode):
     path = {}   #remembers solution path (key: node, value: node before it)
     g[startingNode] = 0
     path[startingNode]=None
+    expanded = 0
 
     while (not.frontier.empty()):
         curr = frontier.get()
+        curr.visitNode()
+        expanded = expanded+1
 
             if curr == goal:
                     break
@@ -34,12 +37,14 @@ def ASTAR(parsedMaze, timeseries, startingNode):
                     frontier.put(cost, next)
                     path[next] = curr
 
-    curr.visitNode()
+    parsedMaze[curr.coordinates['y']][curr.coordinates['x']] = '.'
     curr = next
     while (not path[curr] == None):
         prev = path[curr]
-        prev.visitNode()
+        parsedMaze[prev.coordinates['y']][prev.coordinates['x']] = '.'
         curr = prev
+    print "Nodes expanded: %d", expanded
+    print "Path cost of solution: %d", len(path)
 
 
 def main():
@@ -52,6 +57,7 @@ def main():
         for frame in solved:
             f.write(str(frame))
             f.write('\n')
+        
 
 if __name__ == "__main__":
     main()
