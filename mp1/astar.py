@@ -19,7 +19,7 @@ def ASTAR(parsedMaze, timeseries, startingNode):
     path[startingNode]=None
     expanded = 0
 
-    while (not.frontier.empty()):
+    while (not frontier.empty()):
         curr = frontier.get()
         expanded = expanded+1
 
@@ -41,8 +41,10 @@ def ASTAR(parsedMaze, timeseries, startingNode):
         prev = path[curr]
         parsedMaze[prev.coordinates['y']][prev.coordinates['x']] = '.'
         curr = prev
+      
     print "Nodes expanded: %d", expanded
     print "Path cost of solution: %d", len(path)
+      
     for row in parsedMaze:
             for elem in row:
                 print elem
