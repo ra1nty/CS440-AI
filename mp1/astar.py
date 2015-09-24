@@ -7,6 +7,9 @@ import Queue as q
 
 MAZES = "./mazes/"
 
+def ManhattanDist(current, end):
+    return abs(end.coordinates['x']-current.coordinates['x'])+ abs(end.coordinates['y']-current.coordinates['y'])
+
 def ASTAR(parsedMaze, timeseries, startingNode):
     frontier = q.PriorityQueue()    #initialize frontier queue
     frontier.put(0,startingNode)
@@ -15,11 +18,29 @@ def ASTAR(parsedMaze, timeseries, startingNode):
     g[startingNode] = 0
     path[startingNode]=None
 
-        while not frontier.empty():
-            curr = frontier.get()
-            if curr.isEnding:
-                break
+    while (not.frontier.empty()):
+        curr = frontier.get()
 
+            if curr == goal:
+                    break
+
+            curr.addChildren(parsedMaze)
+
+            for next in curr.children:
+                next_cost = cost_so_far[current]+1
+                if next not in g or next_cost < g[next]:
+                    g[next] = next_cost
+                    cost = next_cost + ManhattanDist(next, next.end)
+                    frontier.put(cost, next)
+                    path[next] = curr
+
+    curr.visitNode()
+    curr = next
+    while (not path[curr] == None):
+        prev = path[curr]
+        prev.visitNode()
+        curr = prev
+    
 
 def main():
     argv = sys.argv
