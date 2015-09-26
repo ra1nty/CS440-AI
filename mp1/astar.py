@@ -1,62 +1,48 @@
-import sys
-import os
-from maze import Maze
-import pdb
-import Queue as q
+MAZES = './mazes/'
 
+def manhattanDist(curr, goal):
+    return abs(curr.coordinates['x'] - goal['x']) + abs(curr.coordinates['y'] - goal['y']) + curr.cost
 
-MAZES = "./mazes/"
+def compare(comp, best):
+    return comp > best
 
-def ManhattanDist(current, end):
-    return abs(end.coordinates['x']-current.coordinates['x'])+ abs(end.coordinates['y']-current.coordinates['y'])
+def cost(parent, child):
+        return parent.cost + 1
 
-def ASTAR(parsedMaze, timeseries, startingNode):
-    frontier = q.PriorityQueue()    #initialize frontier queue
-    frontier.put(0,startingNode)
-    g = {}   #cost so far:(key: node, value: cost so far of node)
-    path = {}   #remembers solution path (key: node, value: node before it)
-    g[startingNode] = 0
-    path[startingNode]=None
+def a_star(parsedMaze, startingNode):
+
+    current = startingNode
     expanded = 0
 
-    while (not frontier.empty()):
-        curr = frontier.get()
-        expanded = expanded+1
+    while (not current.isEnding()):
+        expanded += 1
+        current.visitNode()
+        current.addChildren(parsedMaze)
+        current = current.nextBestNode()
 
-            if curr == goal:
-                    break
+        if current is None:
+            break
 
-            curr.addChildren(parsedMaze)
+    path = current.getTraversal()
 
-            for next in curr.children:
-                next_cost = cost_so_far[current]+1
-                if next not in g or next_cost < g[next]:
-                    g[next] = next_cost
-                    cost = next_cost + ManhattanDist(next, next.end)
-                    frontier.put(cost, next)
-                    path[next] = curr
+    for currNode in path:
+        parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
 
-    curr = next
-    while (not path[curr] == None):
-        prev = path[curr]
-        parsedMaze[prev.coordinates['y']][prev.coordinates['x']] = '.'
-        curr = prev
-      
-    print "Nodes expanded: %d", expanded
-    print "Path cost of solution: %d", len(path)
-      
     for row in parsedMaze:
             for elem in row:
                 print elem,
             print '\n',
+
+    print "path cost of solution:", len(path)
+    print "no of nodes expanded: ", expanded
+
 
 
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved = m.solveUsing(ASTAR, True, heuristic=None, comparisonFunc=None, costAssign=None)
-        
+    m.solveUsing(A_Star, timeseries=True, heuristic=manhattanDist, comparisonFunc=compare, costAssign=cost)
 
 if __name__ == "__main__":
     main()
