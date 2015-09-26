@@ -29,9 +29,9 @@ def comparisonFunc(comp, best):
 
 def costAssignment(parent, child):
     if (parent.currDirection == child.currDirection):
-        return parent.cost + 1
-    else:
         return parent.cost + 2
+    else:
+        return parent.cost + 1
 
 def A_Star(parsedMaze, timeseries, startingNode):
 
@@ -81,7 +81,7 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(A_Star, timeseries=True, heuristic=crossDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
+    m.solveUsing(A_Star, timeseries=True, heuristic=chebyshevDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
 
 if __name__ == "__main__":
     main()
