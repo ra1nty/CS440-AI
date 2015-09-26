@@ -5,7 +5,7 @@ import pdb
 
 MAZES = './mazes/'
 
-def ManhattanDist(curr, goal):
+def manhattanDist(curr, goal):
     return abs(curr.coordinates['x'] - goal['x']) + abs(curr.coordinates['y'] - goal['y']) + curr.cost
 
 def compare(comp, best):
@@ -41,16 +41,20 @@ def a_star(parsedMaze, timeseris, startingNode):
 
     print "path cost of solution:", len(path)
     print "no of nodes expanded: ", expanded
-
+    return parsedMaze
 
 
 def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(a_star, timeseries=True, heuristic=ManhattanDist, comparisonFunc=compare, costAssign=cost)
+    solved = m.solveUsing(a_star, timeseries=True, heuristic=manhattanDist, comparisonFunc=compare, costAssign=cost)
+    with open(argv[1] + '.out', 'w') as f:
+        for frame in solved:
+            for elem in frame:
+               f.write(elem)
+            f.write('\n')
 
 if __name__ == "__main__":
     main()
-
 
