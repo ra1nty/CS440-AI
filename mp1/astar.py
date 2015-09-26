@@ -1,6 +1,11 @@
+from maze import Maze
+import os
+import sys
+import pdb
+
 MAZES = './mazes/'
 
-def manhattanDist(curr, goal):
+def ManhattanDist(curr, goal):
     return abs(curr.coordinates['x'] - goal['x']) + abs(curr.coordinates['y'] - goal['y']) + curr.cost
 
 def compare(comp, best):
@@ -9,7 +14,7 @@ def compare(comp, best):
 def cost(parent, child):
         return parent.cost + 1
 
-def a_star(parsedMaze, startingNode):
+def a_star(parsedMaze, timeseris, startingNode):
 
     current = startingNode
     expanded = 0
@@ -26,7 +31,8 @@ def a_star(parsedMaze, startingNode):
     path = current.getTraversal()
 
     for currNode in path:
-        parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
+        if ( not((currNode.coordinates['y'] == startingNode.coordinates['y'])and(currNode.coordinates['x'] == startingNode.coordinates['x']))):
+            parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
 
     for row in parsedMaze:
             for elem in row:
@@ -42,7 +48,9 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(A_Star, timeseries=True, heuristic=manhattanDist, comparisonFunc=compare, costAssign=cost)
+    m.solveUsing(a_star, timeseries=True, heuristic=ManhattanDist, comparisonFunc=compare, costAssign=cost)
 
 if __name__ == "__main__":
     main()
+
+
