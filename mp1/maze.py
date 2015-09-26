@@ -73,6 +73,8 @@ class searchNode:
         self.currDirection = direction
         self.costAssign = costAssign
         self.cost = 0
+        self.rawCost = 0
+        self.direction = direction
 
         if parent is not None:
             self.heuristic = parent.heuristic
@@ -81,6 +83,7 @@ class searchNode:
             self.starting = parent.starting
             self.costAssign = parent.costAssign
             self.cost = parent.cost
+            self.rawCost = parent.rawCost
 
     def visitNode(self):        #marks node as visited
         self.visited = True
@@ -200,6 +203,7 @@ class searchNode:
 
             if self.costAssign is not None:
                 temp.cost = self.costAssign(self, temp)
+                temp.rawCost = self.rawCost
             self.down = temp
         else:
             self.down = None
@@ -221,6 +225,7 @@ class searchNode:
 
             if self.costAssign is not None:
                 temp.cost = self.costAssign(self, temp)
+                temp.rawCost = self.rawCost
             self.left = temp
         else:
             self.left = None
@@ -242,6 +247,7 @@ class searchNode:
 
             if self.costAssign is not None:
                 temp.cost = self.costAssign(self, temp)
+                temp.rawCost = self.rawCost
             self.up = temp
         else:
             self.up = None

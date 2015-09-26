@@ -49,7 +49,7 @@ def DFS(parsedMaze, timeseries, startingNode):
                     print elem,
                 print '\n',
 
-            sleep(0.1)
+            sleep(0.0)
 
         if (prevNode.hasMoreChildren()):
             nodeStack.append(prevNode)
@@ -68,14 +68,11 @@ def DFS(parsedMaze, timeseries, startingNode):
                 print elem,
             print '\n',
 
-        sleep(0.1)
+        sleep(0.0)
 
     print len(traversed)
 
-    if timeseries:
-        return (move, timelapse)
-    else:
-        return None
+    return parsedMaze
 
 def main():
     argv = sys.argv
@@ -85,9 +82,10 @@ def main():
 
     print m.expandedNodes()
 
-    with open(argv[1] + '.out', 'w') as f:
-        for frame in solved:
-            f.write(str(frame))
+    with open(argv[1] + '_dfs.out', 'w') as f:
+        for row in solved:
+            for elem in row:
+                f.write(elem)
             f.write('\n')
 
 if __name__ == "__main__":

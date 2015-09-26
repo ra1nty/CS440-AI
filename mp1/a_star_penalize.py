@@ -10,11 +10,19 @@ MAZES = './mazes/'
 def manhattanDist(curr, endCoord):
     return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']) + curr.cost
 
+def rawManhattanDist(curr, endCoord):
+    if (curr.direction == curr.parent.direction):
+        reduction = 0
+    else:
+        reduction = 1
+
+    return abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y']) + (curr.cost - reduction)
+
 def euclideanDist(curr, endCoord):
     return sqrt(abs(curr.coordinates['x'] - endCoord['x']) + abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
 
-def chebyshevDist(curr, endCoord):
-    return max(abs(curr.coordinates['x'] - endCoord['x']), abs(curr.coordinates['y'] - endCoord['y'])) + curr.cost
+def jeffDist(curr, endCoord):
+    return curr + curr.cost
 
 def crossDist(curr, endCoord):
     dx1 = curr.coordinates['x'] - endCoord['x']
@@ -38,6 +46,7 @@ def A_Star(parsedMaze, timeseries, startingNode):
     currNode = startingNode
     move = 0
     timelapse = []
+    marked = 0
 
     while (not currNode.isEnding()):
         currNode.visitNode()
@@ -48,6 +57,7 @@ def A_Star(parsedMaze, timeseries, startingNode):
             break
 
         if timeseries:
+            marked += 1
             parsedMaze[currNode.coordinates['y']][currNode.coordinates['x']] = '.'
             move += 1
             timelapse.append(parsedMaze)
@@ -57,7 +67,7 @@ def A_Star(parsedMaze, timeseries, startingNode):
                     print elem,
                 print '\n',
 
-            sleep(0.1)
+            sleep(0.0)
 
     traversed = currNode.getTraversal()
 
@@ -71,9 +81,11 @@ def A_Star(parsedMaze, timeseries, startingNode):
                 print elem,
             print '\n',
 
-        sleep(0.1)
+        sleep(0.0)
 
-    print len(traversed)
+    print traversed[0].cost
+    print marked
+    return parsedMaze
 
 
 
@@ -81,8 +93,13 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(A_Star, timeseries=True, heuristic=chebyshevDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
-    print m.expandedNodes()
+    solved =m.solveUsing(A_Star, timeseries=True, heuristic=rawManhattanDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
+
+    with open(argv[1] + '_a_star_+1forward_newheur.out', 'w') as f:
+        for row in solved:
+            for elem in row:
+                f.write(elem)
+            f.write('\n')
 
 if __name__ == "__main__":
     main()

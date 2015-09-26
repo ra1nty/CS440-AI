@@ -40,7 +40,7 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
                     print elem,
                 print '\n',
 
-            sleep(0.1)
+            sleep(0.0)
 
     traversed = currNode.getTraversal()
 
@@ -54,9 +54,9 @@ def greedyBFS(parsedMaze, timeseries, startingNode):
                 print elem,
             print '\n',
 
-        sleep(0.1)
+        sleep(0.0)
 
-    print len(traversed)
+    return parsedMaze
 
 def main():
     argv = sys.argv
@@ -65,6 +65,12 @@ def main():
     solved = m.solveUsing(greedyBFS, True, euclideanDist, comparisonFunc)
 
     print m.expandedNodes()
+
+    with open(argv[1] + '_greedy_bfs.out', 'w') as f:
+        for row in solved:
+            for elem in row:
+                f.write(elem)
+            f.write('\n')
 
 
 if __name__ == "__main__":
