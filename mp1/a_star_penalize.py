@@ -81,8 +81,7 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    m.solveUsing(A_Star, timeseries=True, heuristic=manhattanDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
-
+    m.solveUsing(A_Star, timeseries=True, heuristic=chebyshevDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
     print m.expandedNodes()
 
 if __name__ == "__main__":
