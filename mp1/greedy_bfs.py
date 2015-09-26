@@ -64,7 +64,8 @@ def main():
     m = Maze(MAZES + argv[1] + '.maze')
     solved = m.solveUsing(greedyBFS, True, euclideanDist, comparisonFunc)
 
-    print solved[0]
+    print m.expandedNodes()
+
 
 if __name__ == "__main__":
     main()

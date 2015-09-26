@@ -26,6 +26,8 @@ from Queue import PriorityQueue
              addChildren - Generates 4 children in the order right, down, left, up
 """
 
+expandedNodes = 0
+
 class searchNode:
 
     WALL = '%'
@@ -158,6 +160,9 @@ class searchNode:
         x = self.coordinates['x']
         temp = None
 
+        if len(self.children) is not 0:
+            return
+
         if str(dict(x=x+1, y=y)) in self.allNodes:
             if not self.allNodes[str(dict(x=x+1, y=y))].visited:
                 temp = self.allNodes[str(dict(x=x+1, y=y))]
@@ -241,6 +246,10 @@ class searchNode:
         else:
             self.up = None
 
+        global expandedNodes
+        expandedNodes += len(self.children)
+        print expandedNodes
+
         if self.heuristic is not None:
             for child in self.children:
                 if str(child.coordinates) not in self.frontier:
@@ -300,6 +309,9 @@ class Maze:
 
         print "Starting (%d, %d)" % (self.startingCoord['x'], self.startingCoord['y'])
         print "Ending (%d, %d)" % (self.endingCoord['x'], self.endingCoord['y'])
+
+    def expandedNodes(self):
+        return expandedNodes
 
     def solveUsing(self, method=None, timeseries=False, heuristic=None, comparisonFunc=None, costAssign=None):
         if method != None:

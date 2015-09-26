@@ -70,6 +70,8 @@ def DFS(parsedMaze, timeseries, startingNode):
 
         sleep(0.1)
 
+    print len(traversed)
+
     if timeseries:
         return (move, timelapse)
     else:
@@ -80,6 +82,8 @@ def main():
 
     m = Maze(MAZES + argv[1] + '.maze')
     solved = m.solveUsing(DFS, True)
+
+    print m.expandedNodes()
 
     with open(argv[1] + '.out', 'w') as f:
         for frame in solved:
