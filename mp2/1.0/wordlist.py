@@ -1,10 +1,12 @@
 import os
 import sys
+import trie
 
 class wordList:
 
     wordlist_dir = "./wordlist/"
     words = dict()
+    wordSubjectRelation = dict()
 
     def __init__(self):
         files = os.listdir(self.wordlist_dir)
@@ -15,6 +17,12 @@ class wordList:
 
             lines = temp.replace('\r', '').split('\n')
             self.words[f.replace('.txt', '')] = lines
+
+    def generateWordSubjectRel(self):
+
+        for subject, words in self.words.itertools():
+            for word in words:
+                self.wordSubjectRelation[word] = subject
 
     def printWordList(self):
         for k, v in self.words.iteritems():

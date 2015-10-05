@@ -23,6 +23,7 @@ class WordGame:
                 self.properties[lineTokens[0]] = lineTokens[1].split(',')
 
     def bruteForce(self):
+
         pass
 
     def printWordGame(self):

@@ -37,9 +37,9 @@ def comparisonFunc(comp, best):
 
 def costAssignment(parent, child):
     if (parent.currDirection == child.currDirection):
-        return parent.cost + 1
-    else:
         return parent.cost + 2
+    else:
+        return parent.cost + 1
 
 def A_Star(parsedMaze, timeseries, startingNode):
 
@@ -93,7 +93,8 @@ def main():
     argv = sys.argv
 
     m = Maze(MAZES + argv[1] + '.maze')
-    solved =m.solveUsing(A_Star, timeseries=True, heuristic=rawManhattanDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
+    solved =m.solveUsing(A_Star, timeseries=True, heuristic=manhattanDist, comparisonFunc=comparisonFunc, costAssign=costAssignment)
+    print m.expandedNodes()
 
     with open(argv[1] + '_a_star_+1forward_newheur.out', 'w') as f:
         for row in solved:
