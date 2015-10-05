@@ -24,45 +24,47 @@ class Trie:
 
     def __insert(self, subroot, word, idx):
         if len(word) - 1 is idx:
-            subroot.children[word[idx]] = TrieNode(word[idx])
+            subroot.children[word[idx]] = self.TrieNode(word[idx])
             subroot.children[word[idx]].isWord = True
         else:
-            try:
-                subroot.children[word[idx]]
-            except KeyError:
-                subroot.children[word[idx]] = TrieNode(word[idx])
-            finally:
-                self.__insert(subroot.children[word[idx]], word, idx+1)
+            if word[idx] not in subroot.children.keys():
+                subroot.children[word[idx]] = self.TrieNode(word[idx])
+            self.__insert(subroot.children[word[idx]], word, idx+1)
 
     def search(self, word=""):
         if not word == "":
             word = word.lower()
-            self.__search(self.root, word, 0)
+            return self.__search(self.root, word, 0)
 
     def __search(self, subroot, word, idx):
-        if len(word) - 1 is idx and subroot is not None:
-            return subroot.isWord
+        if len(word) - 1 is idx:
+            if word[idx] in subroot.children.keys():
+                return subroot.children[word[idx]].isWord
+            else:
+                return False
         else:
-            self.__search(subroot.children[word[idx]], word, idx + 1)
+            if word[idx] not in subroot.children.keys():
+                return False
+            else:
+                return self.__search(subroot.children[word[idx]], word, idx + 1)
+
 
 
 def testTrie():
     trie = Trie()
 
-    testWords = ["Alpha", "abrar", "HypOPoMous"]
-    verifyWords = ["alpHa", "aBrar", "HypoPoMous"]
+    testWords = ["AlphA", "abrar", "HypOPoMous", "test", "testtt"]
+    verifyWords = ["alpHa", "aBrar", "HypoPoMous", "Test", "testt"]
 
     for word in testWords:
         trie.insert(word)
 
     for idx in range(0, len(testWords)):
-        if testWords[idx] == verifyWords[idx]:
-            if trie.search(verifyWords[idx]):
-                print "Passes test %s is found!" % (verifyWords[idx])
+        if trie.search(verifyWords[idx]):
+            print "Passes test %s is found!" % (verifyWords[idx])
+        else:
+            print "Passes test %s is not found!" % (verifyWords[idx])
 
-        elif not testWords[idx] == verifyWords[idx]:
-            if not trie.search(verifyWords[idx]):
-                print "Passes test %s is not found!" % (verifyWords[idx])
 
 if __name__ == "__main__":
     testTrie()
