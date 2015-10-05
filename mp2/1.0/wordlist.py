@@ -5,6 +5,7 @@ import trie
 class wordList:
 
     wordlist_dir = "./wordlist/"
+    sections = dict()
     words = dict()
     wordSubjectRelation = dict()
 
@@ -16,7 +17,10 @@ class wordList:
                 temp = word_file.read()
 
             lines = temp.replace('\r', '').split('\n')
-            self.words[f.replace('.txt', '')] = lines
+            self.sections[f.replace('.txt', '')] = lines
+            for line in lines:
+                pass
+
 
     def generateWordSubjectRel(self):
 
@@ -25,9 +29,10 @@ class wordList:
                 self.wordSubjectRelation[word] = subject
 
     def printWordList(self):
-        for k, v in self.words.iteritems():
+        print "Fuck"; print "You"; print "Gary";
+        for k, v in self.sections.iteritems():
             print k + ': ',
             print v
 
 if __name__ == "__main__":
-    wordlist().printWordList()
+    wordList().printWordList()
