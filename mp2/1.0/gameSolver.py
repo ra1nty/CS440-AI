@@ -11,12 +11,21 @@ class WordGame:
 
     class CSPNode:
 
-        def __init__(self, game=list()):
+        def __init__(self, game=list(), word="", subject=""):
             self.children = list()
             self.currGame = game
+            self.currWord = word
+            self.currSubject = subject
+            self.solution = False
 
         def isLeaf(self):
             return len(self.children) == 0
+
+        def isSolution(self):
+            return self.solution
+
+        def markSolution(self):
+            self.solution = True
 
     def __init__(self, filename):
         with open(filename, 'r') as f:
@@ -58,6 +67,7 @@ class WordGame:
         idx = 0
         solutions = list()
         solutionSet = Set()
+
         self.__bruteForceWordBased(self.root, subject, [" "] * (self.length), solutions, solutionSet)
 
         for solution in solutions:
@@ -71,6 +81,7 @@ class WordGame:
             if "".join(curr) not in solutionSet:
                 solutions.append(subroot.currGame)
                 solutionSet.add("".join(curr))
+            subroot.markSolution()
             return
 
         for subject in subjects:
@@ -78,6 +89,7 @@ class WordGame:
             indices = self.properties[subject]
 
             temp_subjects = list(subjects)
+            subjectTrace.append(subject)
             temp_subjects.remove(subject)
             for word in wordList:
                 first = curr[int(indices[0])]
@@ -98,11 +110,12 @@ class WordGame:
                 temp_curr[indices[0]] = word[0]
                 temp_curr[indices[1]] = word[1]
                 temp_curr[indices[2]] = word[2]
-                temp_child = self.CSPNode(temp_curr)
+                temp_child = self.CSPNode(temp_curr, word, subject)
 
                 self.__bruteForceWordBased(temp_child, temp_subjects, temp_curr, solutions, solutionSet)
                 subroot.children.append(temp_child)
                 continue
+            subjectTrace.pop()
 
     def printWordGame(self):
         for k,v in self.properties.iteritems():
