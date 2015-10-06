@@ -23,17 +23,24 @@ class wordList:
                 pass
 
         self.generateWordSubjectRel()
-        self.fillTrie()
-
+        self.trieFilled = False
 
     def generateWordSubjectRel(self):
-        for subject, words in self.words.itertools():
+        for subject, words in self.words.iteritems():
             for word in words:
                 self.wordSubjectRelation[word] = subject
 
-    def fillTrie(self):
-        for word in self.wordSubjectRelation.keys():
-            self.trie.insert(word)
+    def getSubject(self, word):
+        return self.wordSubjectRelation[word]
+
+    def getWordsBySubject(self, subject):
+        return self.sections[subject]
+
+    def getTrie(self):
+        if not self.trieFilled:
+            for word in self.wordSubjectRelation.keys():
+                self.trie.insert(word)
+            self.trieFilled = True
         return self.trie
 
     def printWordList(self):
