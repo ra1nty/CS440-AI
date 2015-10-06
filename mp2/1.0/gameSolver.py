@@ -1,6 +1,7 @@
 import os
 import sys
 from wordlist import wordList
+from trie import Trie
 
 class WordGame:
 

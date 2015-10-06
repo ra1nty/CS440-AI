@@ -1,6 +1,6 @@
 import os
 import sys
-import trie
+from trie import Trie
 
 class wordList:
 
@@ -11,6 +11,7 @@ class wordList:
 
     def __init__(self):
         files = os.listdir(self.wordlist_dir)
+        self.trie = Trie()
 
         for f in files:
             with open(self.wordlist_dir + f, 'r') as word_file:
@@ -23,13 +24,15 @@ class wordList:
 
 
     def generateWordSubjectRel(self):
-
         for subject, words in self.words.itertools():
             for word in words:
                 self.wordSubjectRelation[word] = subject
 
+    def fillTrie(self):
+        for word in self.wordSubjectRelation.keys():
+            self.trie.insert(word)
+
     def printWordList(self):
-        print "Fuck"; print "You"; print "Gary";
         for k, v in self.sections.iteritems():
             print k + ': ',
             print v
