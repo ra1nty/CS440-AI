@@ -26,12 +26,26 @@ class wordList:
         self.trieFilled = False
 
     def generateWordSubjectRel(self):
-        for subject, words in self.words.iteritems():
+        for subject, words in self.sections.iteritems():
             for word in words:
-                self.wordSubjectRelation[word] = subject
+                if word in self.wordSubjectRelation.keys():
+                    tempSubject = self.wordSubjectRelation[word]
+                    tempSubjectList = list()
+                    if type(tempSubject) is list:
+                        for sub in tempSubject:
+                            tempSubjectList.append(sub)
+                    else:
+                        tempSubjectList.append(tempSubject)
+                    tempSubjectList.append(subject)
+                    self.wordSubjectRelation[word] = tempSubjectList
+                else:
+                    self.wordSubjectRelation[word] = subject
 
     def getSubject(self, word):
-        return self.wordSubjectRelation[word]
+        if word not in self.wordSubjectRelation.keys():
+            return "None"
+        else:
+            return self.wordSubjectRelation[word]
 
     def getWordsBySubject(self, subject):
         return self.sections[subject]
