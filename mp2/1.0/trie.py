@@ -48,6 +48,25 @@ class Trie:
             else:
                 return self.__search(subroot.children[word[idx]], word, idx + 1)
 
+    def autoComplete(self, word=""):
+        if not word == "":
+            word = word.lower()
+            autoComplete = list()
+            self.__autoComplete(self.root, word, 0, autoComplete)
+            return autoComplete
+
+    def __autoComplete(self, subroot, word, idx, arr):
+        if len(word) is idx:
+            if (subroot.isWord):
+                arr.append(word)
+
+            for letter, node in subroot.children.iteritems():
+                self.__autoComplete(node, word + letter, idx + 1, arr)
+        else:
+            if word[idx] not in subroot.children.keys():
+                return False
+            else:
+                return self.__autoComplete(subroot.children[word[idx]], word, idx + 1, arr)
 
 
 def testTrie():
@@ -64,6 +83,9 @@ def testTrie():
             print "Passes test %s is found!" % (verifyWords[idx])
         else:
             print "Passes test %s is not found!" % (verifyWords[idx])
+
+    for word in trie.autoComplete("t"):
+        print word
 
 
 if __name__ == "__main__":

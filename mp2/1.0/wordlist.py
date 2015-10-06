@@ -22,6 +22,9 @@ class wordList:
             for line in lines:
                 pass
 
+        self.generateWordSubjectRel()
+        self.fillTrie()
+
 
     def generateWordSubjectRel(self):
         for subject, words in self.words.itertools():
@@ -31,6 +34,7 @@ class wordList:
     def fillTrie(self):
         for word in self.wordSubjectRelation.keys():
             self.trie.insert(word)
+        return self.trie
 
     def printWordList(self):
         for k, v in self.sections.iteritems():
