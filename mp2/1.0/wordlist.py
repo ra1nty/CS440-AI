@@ -41,6 +41,10 @@ class wordList:
                 else:
                     self.wordSubjectRelation[word] = subject
 
+    def autoCompleteOnSubject(self, string):
+
+        pass
+
     def getSubject(self, word):
         if word not in self.wordSubjectRelation.keys():
             return "None"

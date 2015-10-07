@@ -60,6 +60,12 @@ class WordGame:
 
         return True
 
+    def bruteForceLetterBased(self):
+        pass
+
+    def __bruteForceLetterBased(self):
+        pass
+
     def bruteForceWordBased(self):
         trie = wordList().getTrie()
 
@@ -89,7 +95,6 @@ class WordGame:
             indices = self.properties[subject]
 
             temp_subjects = list(subjects)
-            subjectTrace.append(subject)
             temp_subjects.remove(subject)
             for word in wordList:
                 first = curr[int(indices[0])]
@@ -115,7 +120,6 @@ class WordGame:
                 self.__bruteForceWordBased(temp_child, temp_subjects, temp_curr, solutions, solutionSet)
                 subroot.children.append(temp_child)
                 continue
-            subjectTrace.pop()
 
     def printWordGame(self):
         for k,v in self.properties.iteritems():
