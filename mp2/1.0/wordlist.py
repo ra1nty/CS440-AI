@@ -24,6 +24,20 @@ class wordList:
 
         self.generateWordSubjectRel()
         self.trieFilled = False
+        self.generateSubjectTrie()
+
+    def autoCompleteSubject(self, subject, curr):
+        if subject in self.subjectTrie.keys():
+            return self.subjectTrie[subject].autoComplete(curr)
+        else:
+            return list()
+
+    def generateSubjectTrie(self):
+        self.subjectTrie = dict()
+        for subject, words in self.sections.iteritems():
+            self.subjectTrie[subject] = Trie()
+            for word in words:
+                self.subjectTrie[subject].insert(word)
 
     def generateWordSubjectRel(self):
         for subject, words in self.sections.iteritems():

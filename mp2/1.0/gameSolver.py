@@ -44,6 +44,7 @@ class WordGame:
                     self.properties[lineTokens[0]].append(int(indice) - 1)
 
         self.string = [" "] * (length)
+        self.length = length
         self.root = self.CSPNode()
 
     def verifySolution(self, solution):
@@ -61,10 +62,57 @@ class WordGame:
         return True
 
     def bruteForceLetterBased(self):
-        pass
+        trie = wordList().getTrie()
 
-    def __bruteForceLetterBased(self):
-        pass
+        subject = self.properties.keys()
+        solutions = list()
+        solutionSet = Set()
+        self.__bruteForceLetterBased(self.root, [" "] * self.length, solutions, solutionSet)
+
+        for solution in solutions:
+            print solution
+
+    def __bruteForceLetterBased(self, subroot, curr, solutions, solutionSet):
+        if not curr[len(curr) - 1] == " ":
+            if "".join(curr) not in solutionSet:
+                solutionSet.add("".join(curr))
+                solutions.append("".join(curr))
+                print solutions
+            return
+
+        idx = 0
+        for i in range(0, len(curr)):
+            if curr[i] == " ":
+                idx = i
+                break
+
+        sub = ""
+        indicesActual = list()
+        for subject, indices in self.properties.iteritems():
+            for indice in indices:
+                if indice == idx:
+                    sub = subject
+                    indicesActual = indices
+                    break
+
+        word = ""
+
+        insertIdx = 0
+        for i in range(0, len(indicesActual)):
+            if indicesActual[i] == idx:
+                insertIdx = i
+
+            word += curr[indice]
+
+        autoCompletes = self.wordList.autoCompleteSubject(sub, word)
+
+        for autoComplete in autoCompletes:
+            tempChar = autoComplete[insertIdx]
+            tempCurr = list(curr)
+            tempCurr[idx] = tempChar
+            tempNode = self.CSPNode(tempCurr)
+            subroot.children.append(tempNode)
+            self.__bruteForceLetterBased(tempNode, tempCurr, solutions, solutionSet)
 
     def bruteForceWordBased(self):
         trie = wordList().getTrie()
@@ -133,7 +181,7 @@ def main():
 
     game = WordGame(gameDirectory + argv[1] + '.game')
     game.printWordGame()
-    game.bruteForceWordBased()
+    game.bruteForceLetterBased()
 
 
 if __name__ == "__main__":

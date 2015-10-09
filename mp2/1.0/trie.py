@@ -49,11 +49,11 @@ class Trie:
                 return self.__search(subroot.children[word[idx]], word, idx + 1)
 
     def autoComplete(self, word=""):
-        if not word == "":
-            word = word.lower()
-            autoComplete = list()
-            self.__autoComplete(self.root, word, 0, autoComplete)
-            return autoComplete
+        word = word.strip(' ')
+        word = word.lower()
+        autoComplete = list()
+        self.__autoComplete(self.root, word, 0, autoComplete)
+        return autoComplete
 
     def __autoComplete(self, subroot, word, idx, arr):
         if len(word) is idx:
@@ -84,6 +84,7 @@ def testTrie():
         else:
             print "Passes test %s is not found!" % (verifyWords[idx])
 
+    print trie.autoComplete("")
     for word in trie.autoComplete("t"):
         print word
 
