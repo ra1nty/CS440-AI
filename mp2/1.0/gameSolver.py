@@ -76,11 +76,25 @@ class WordGame:
 
         self.__bruteForceWordBased(self.root, subject, [" "] * (self.length), solutions, solutionSet)
 
+        searchOrder = list()
+        nodeTraversal = list()
+
+        nodeTraversal.append("root")
+
+        self.__treeTrace(self.root, searchOrder, nodeTraversal)
+
         for solution in solutions:
             if self.verifySolution(solution):
                 print "".join(solution) + " is a valid solution!"
             else:
                 print "".join(solution) + " is not a valid solution :("
+
+    def __printSpaces(self, depth):
+        for i in xrange(0, 4 + 7*depth):
+            print " ",
+
+    def __treeTrace(self, subroot, search, node):
+        pass
 
     def __bruteForceWordBased(self, subroot, subjects, curr, solutions, solutionSet):
         if len(subjects) == 0:
