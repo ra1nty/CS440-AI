@@ -1,6 +1,7 @@
 import os
 import sys
 from trie import Trie
+from sets import Set
 
 class wordList:
 
@@ -26,11 +27,65 @@ class wordList:
         self.trieFilled = False
         self.generateSubjectTrie()
 
-    def autoCompleteSubject(self, subject, curr):
-        if subject in self.subjectTrie.keys():
-            return self.subjectTrie[subject].autoComplete(curr)
-        else:
-            return list()
+    def autoCompleteSubjectLetter(self, subjects, curr, currIdx):
+        joinedList = list()
+        tempList = list()
+        letterSet = Set()
+
+        for subject in subjects:
+            if subject in self.subjectTrie:
+                tempList = self.subjectTrie[subject].autoComplete(curr)
+            else:
+                continue
+
+            tempSet = Set()
+            for word in tempList:
+                tempSet.add(word)
+
+            for word in joinedList:
+                tempSet.add(word)
+
+            newList = list()
+            for word in tempSet:
+                newList.append(word)
+
+            joinedList = newList
+
+        for word in joinedList:
+            letterSet.add(word[currIdx])
+
+        candidates = list()
+        for letter in letterSet:
+            candidates.append(letter)
+
+
+        return candidates
+
+
+    def autoCompleteSubject(self, subjects, curr):
+        intersectList = list()
+        tempList = list()
+
+        for subject in subjects:
+            if subject in self.subjectTrie:
+                tempList = self.subjectTrie[subject].autoComplete(curr)
+            else:
+                continue
+            if not len(intersectList) == 0:
+                tempSet = Set()
+                for word in intersectList:
+                    tempSet.add(word)
+
+                intersectList = list()
+                for word in tempList:
+                    if word not in tempSet:
+                        intersectList.append(word)
+                for word in tempSet:
+                    intersectList.append(word)
+            else:
+                intersectList = tempList
+
+        return intersectList
 
     def generateSubjectTrie(self):
         self.subjectTrie = dict()
@@ -55,10 +110,6 @@ class wordList:
                 else:
                     self.wordSubjectRelation[word] = subject
 
-    def autoCompleteOnSubject(self, string):
-
-        pass
-
     def getSubject(self, word):
         if word not in self.wordSubjectRelation.keys():
             return "None"
@@ -81,4 +132,4 @@ class wordList:
             print v
 
 if __name__ == "__main__":
-    wordList().printWordList()
+    wordList().autoCompleteSubject(["adverb", "noun"], "")

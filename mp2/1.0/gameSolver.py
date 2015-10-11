@@ -48,7 +48,6 @@ class WordGame:
         self.root = self.CSPNode()
 
     def verifySolution(self, solution):
-
         for prop, indices in self.properties.iteritems():
             tempstr = str()
             for indice in indices:
@@ -67,52 +66,48 @@ class WordGame:
         subject = self.properties.keys()
         solutions = list()
         solutionSet = Set()
-        self.__bruteForceLetterBased(self.root, [" "] * self.length, solutions, solutionSet)
+        self.__bruteForceLetterBased(self.root, [" "] * self.length, 0, solutions, solutionSet)
 
         for solution in solutions:
             print solution
 
-    def __bruteForceLetterBased(self, subroot, curr, solutions, solutionSet):
-        if not curr[len(curr) - 1] == " ":
+    def __bruteForceLetterBased(self, subroot, curr, idx, solutions, solutionSet):
+        if idx == len(curr) - 1:
             if "".join(curr) not in solutionSet:
                 solutionSet.add("".join(curr))
                 solutions.append("".join(curr))
-                print solutions
             return
 
-        idx = 0
-        for i in range(0, len(curr)):
-            if curr[i] == " ":
-                idx = i
-                break
+        newCurr = list(curr)
+        currIndices = []
+        currSubject = list()
 
-        sub = ""
-        indicesActual = list()
         for subject, indices in self.properties.iteritems():
-            for indice in indices:
-                if indice == idx:
-                    sub = subject
-                    indicesActual = indices
-                    break
+            if idx in indices:
+                currSubject.append(subject)
+                currIndices = indices
 
-        word = ""
+        currWord = ""
 
-        insertIdx = 0
-        for i in range(0, len(indicesActual)):
-            if indicesActual[i] == idx:
-                insertIdx = i
+        for indice in currIndices:
+            if not currWord == " ":
+                currWord += curr[indice]
 
-            word += curr[indice]
+        wordIdx = 0
+        for indice in currIndices:
+            if indice is idx:
+                break
+            wordIdx += 1
 
-        autoCompletes = self.wordList.autoCompleteSubject(sub, word)
+        candidates = self.wordList.autoCompleteSubjectLetter(currSubject, "".join(curr), wordIdx)
+        print curr
 
-        for autoComplete in autoCompletes:
-            tempChar = autoComplete[insertIdx]
-            tempCurr = list(curr)
-            tempCurr[idx] = tempChar
-            tempNode = self.CSPNode(tempCurr)
-            subroot.children.append(tempNode)
-            self.__bruteForceLetterBased(tempNode, tempCurr, solutions, solutionSet)
+        for candidate in candidates:
+            newCurr[idx] = candidate
+            print newCurr
+            newNode = self.CSPNode(newCurr)
+            subroot.children.append(newNode)
+            self.__bruteForceLetterBased(newNode, newCurr, idx + 1, solutions, solutionSet)
 
     def bruteForceWordBased(self):
         trie = wordList().getTrie()
@@ -150,8 +145,9 @@ class WordGame:
                 solutions.append(subroot.currGame)
                 solutionSet.add("".join(curr))
             subroot.markSolution()
-            return
+            return True
 
+        ret = False
         for subject in subjects:
             wordList = self.wordList.getWordsBySubject(subject)
             indices = self.properties[subject]
@@ -179,8 +175,13 @@ class WordGame:
                 temp_curr[indices[2]] = word[2]
                 temp_child = self.CSPNode(temp_curr, word, subject)
 
-                self.__bruteForceWordBased(temp_child, temp_subjects, temp_curr, solutions, solutionSet)
-                subroot.children.append(temp_child)
+                ret = self.__bruteForceWordBased(temp_child, temp_subjects, temp_curr, solutions, solutionSet) or ret
+
+                if ret == False:
+                    subroot.children.append("backtrace")
+                else:
+                    subroot.children.append(temp_child)
+
                 continue
 
     def printWordGame(self):
