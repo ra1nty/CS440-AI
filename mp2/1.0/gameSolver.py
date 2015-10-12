@@ -77,7 +77,6 @@ class WordGame:
             if "".join(curr) not in solutionSet:
                 solutionSet.add("".join(curr))
                 solutions.append("".join(curr))
-                print solutions
             return
 
         idx = 0
@@ -96,7 +95,6 @@ class WordGame:
                     break
 
         word = ""
-
         insertIdx = 0
         for i in range(0, len(indicesActual)):
             if indicesActual[i] == idx:
