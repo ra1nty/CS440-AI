@@ -18,14 +18,34 @@ class board:
   occupant = [[0 for x in range(BOARD_SIZE)] for x in range(BOARD_SIZE)]; 
 
 
-  # initializes 6 by 6 board with random values
   # initializes occupied board all to zero
-  def __init__(self):
+  # parses file into board values 
+  def __init__(self, filename):
     i = 0;
+
+    with open(filename, 'r') as f:
+      temp = f.read()
+
+    arrayBoard = list()
+    boardRow = list()
+
+    for c in temp:
+      if c != '\n':
+        if c != '\t' and c != '\r':
+          boardRow.append(c)
+
+      else:
+        arrayBoard.append(boardRow)
+        boardRow = list()
+
+    print arrayBoard
+
     for x in range(0, self.BOARD_SIZE):
       for y in range (0, self.BOARD_SIZE):
-        self.vals[y][x] = randint(1,99);
         self.occupant[y][x] = 0;
+        self.vals[y][x] = arrayBoard[y][x];
+
+
 
 
   def printBoard(self):
@@ -141,9 +161,9 @@ class board:
 
 
 def main():
-  b = board()
+  b = board("./game_boards/Keren.txt")
   b.printBoard()
   status  = b.getStatus()
-  print status
+  #print status
 
 main()

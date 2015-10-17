@@ -1,3 +1,4 @@
+from board import board
 
 class playerMiniMax:
   BLUE = 1;
@@ -6,4 +7,4 @@ class playerMiniMax:
   def __init__(self, color):
     self.color = color;
 
-  
+
