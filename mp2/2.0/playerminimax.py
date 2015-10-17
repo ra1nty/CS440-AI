@@ -5,3 +5,5 @@ class playerMiniMax:
   color = 0;
   def __init__(self, color):
     self.color = color;
+
+  
