@@ -40,6 +40,16 @@ class WordGame:
         def __cmp__(self, other):
             return self.heuristic < other.heuristic
 
+    class Indice:
+
+        def __init__(self, indice, collisions, subjects):
+            self.indice = indice
+            self.collisions = collisions
+            self.subjects = subjects
+
+        def __cmp__(self, other):
+            return self.collisions > other.collisions
+
     class Subject:
 
         def __init__(self, name, collisions):
@@ -82,55 +92,109 @@ class WordGame:
 
         return True
 
-    def bruteForceLetterBased(self):
-        trie = wordList().getTrie()
+    def letterBasedSolution(self):
+        order = PriorityQueue()
+        prevIndices = list()
 
-        subject = self.properties.keys()
-        solutions = list()
+        for i in xrange(0, self.length):
+            collisions = 0
+            subjects = list()
+
+            for subject, indices in self.properties.iteritems():
+                if i in indices:
+                    idx = 0
+
+                    collisions += 1
+                    for indice in indices:
+                        if i == indice:
+                            break
+                        idx += 1
+                    subjects.append((subject, idx))
+
+            newIndice = self.Indice(i, collisions, subjects)
+            order.put(newIndice)
+
+        stack = [] * order.qsize()
+        while not order.empty():
+            temp = order.get()
+            stack.append(temp)
+            print str(temp.indice) + " with " + str(temp.collisions) + " collisions"
+            print temp.subjects
+
         solutionSet = Set()
-        self.__bruteForceLetterBased(self.root, [" "] * self.length, 0, solutions, solutionSet)
+        tree = self.CSPNode()
+        currGame = [" "] * self.length
+        self.__letterBasedSolution(tree, stack, currGame, solutionSet)
 
-        for solution in solutions:
+        for solution in solutionSet:
             print solution
 
-    def __bruteForceLetterBased(self, subroot, curr, idx, solutions, solutionSet):
-        if idx == len(curr) - 1:
-            if "".join(curr) not in solutionSet:
-                solutionSet.add("".join(curr))
-                solutions.append("".join(curr))
+    def __letterBasedSolution(self, subroot, order, curr, solutionSet):
+        if len(order) == 0:
+            solutionSet.add("".join(curr))
+            propogateSolution(subroot)
             return
 
-        newCurr = list(curr)
-        currIndices = []
-        currSubject = list()
+        indice = order.pop() # Get the indice to fill in
+        candidates = PriorityQueue()
+        wordSet = Set()
 
-        for subject, indices in self.properties.iteritems():
-            if idx in indices:
-                currSubject.append(subject)
-                currIndices = indices
+        if len(order) > 0:
+            nextIndice = order.pop()
+            order.append(nextIndice)
+        else:
+            nextIndice = None
 
-        word = ""
-        insertIdx = 0
-        for i in range(0, len(indicesActual)):
-            if indicesActual[i] == idx:
-                insertIdx = i
-        wordIdx = 0
-        for indice in currIndices:
-            if indice is idx:
-                break
-            wordIdx += 1
+        letterSet = Set()
+        for subjectTuple in indice.subjects:
+            resultingWord = ""
+            tempCurr = list(curr)
+            subject = subjectTuple[0]
+            wordIdx = subjectTuple[1]
 
-        candidates = self.wordList.autoCompleteSubjectLetter(currSubject, "".join(curr), wordIdx)
-        print curr
+            subjectIndices = self.properties[subject]
 
-        for candidate in candidates:
-            newCurr[idx] = candidate
-            print newCurr
-            newNode = self.CSPNode(newCurr)
+            for i in subjectIndices:
+                resultingWord += curr[i]
+
+            tempAnswers = self.wordList.validAnswers(subject, resultingWord)
+
+            for answer in tempAnswers:
+                letterSet.add(answer[wordIdx])
+
+        # pdb.set_trace()
+        for letter in letterSet:
+            tempCurr[indice.indice] = letter
+
+            if nextIndice is not None:
+                mergeList = list()
+                mergeSet = Set()
+
+                for sub in nextIndice.subjects:
+                    resultingWord = ""
+                    subjectIndices = self.properties[sub[0]]
+                    for i in subjectIndices:
+                        resultingWord += tempCurr[i]
+
+                    nextLevel = self.wordList.validAnswers(sub[0], resultingWord)
+                    for next in nextLevel:
+                        mergeSet.add(next)
+
+                for next in mergeSet:
+                    mergeList.append(next)
+
+                candidates.put(self.Candidate(answer[wordIdx], len(mergeList), tempCurr))
+
+        while not candidates.empty():
+            candidate = candidates.get()
+            tempCurr = candidate.board
+            newNode = self.CSPNode(game=tempCurr, word=candidate.name, parent=subroot)
             subroot.children.append(newNode)
-            self.__bruteForceLetterBased(newNode, newCurr, idx + 1, solutions, solutionSet)
+            self.__letterBasedSolution(newNode, order, tempCurr, solutionSet)
 
-    def bruteForceWordBased(self):
+        order.append(indice)
+
+    def wordBasedSolution(self):
         order = PriorityQueue()
         tempOrder = PriorityQueue(order)
 
@@ -157,7 +221,7 @@ class WordGame:
         solutionSet = Set()
         tree = self.CSPNode()
         currGame = [" "] * self.length
-        self.__bruteForceWordBased(tree, stack, currGame, solutionSet)
+        self.__wordBasedSolution(tree, stack, currGame, solutionSet)
 
         for solution in solutionSet:
             print solution
@@ -174,7 +238,7 @@ class WordGame:
             subroot.isSolution()
             subroot = subroot.parent
 
-    def __bruteForceWordBased(self, subroot, order, curr, solutionSet):
+    def __wordBasedSolution(self, subroot, order, curr, solutionSet):
         if len(order) == 0:
             solutionSet.add("".join(curr))
             self.propogateSolution(subroot)
@@ -225,7 +289,7 @@ class WordGame:
             candidate = candidates.get()
             tempCurr = candidate.board
             newNode = self.CSPNode(tempCurr, candidate.name, subject, subroot)
-            self.__bruteForceWordBased(newNode, order, tempCurr, solutionSet)
+            self.__wordBasedSolution(newNode, order, tempCurr, solutionSet)
             subroot.children.append(newNode)
 
         order.append(subject)
@@ -242,7 +306,8 @@ def main():
 
     game = WordGame(gameDirectory + argv[1] + '.game')
     game.printWordGame()
-    game.bruteForceWordBased()
+    # game.wordBasedSolution()
+    game.letterBasedSolution()
 
 
 if __name__ == "__main__":
