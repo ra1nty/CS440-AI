@@ -37,9 +37,9 @@ def comparisonFunc(comp, best):
 
 def costAssignment(parent, child):
     if (parent.currDirection == child.currDirection):
-        return parent.cost + 2
-    else:
         return parent.cost + 1
+    else:
+        return parent.cost + 2
 
 def A_Star(parsedMaze, timeseries, startingNode):
 

@@ -3,6 +3,8 @@ import sys
 from sets import Set
 from wordlist import wordList
 from trie import Trie
+from Queue import PriorityQueue
+import pdb
 
 class WordGame:
 
@@ -11,12 +13,13 @@ class WordGame:
 
     class CSPNode:
 
-        def __init__(self, game=list(), word="", subject=""):
+        def __init__(self, game=list(), word="", subject="", parent=None):
             self.children = list()
             self.currGame = game
             self.currWord = word
             self.currSubject = subject
             self.solution = False
+            self.parent = parent
 
         def isLeaf(self):
             return len(self.children) == 0
@@ -26,6 +29,25 @@ class WordGame:
 
         def markSolution(self):
             self.solution = True
+
+    class Candidate:
+
+        def __init__(self, name, validAnswers, resultingBoard):
+            self.name = name
+            self.heuristic = validAnswers
+            self.board = resultingBoard
+
+        def __cmp__(self, other):
+            return self.heuristic < other.heuristic
+
+    class Subject:
+
+        def __init__(self, name, collisions):
+            self.name = name
+            self.collisions = collisions
+
+        def __cmp__(self, other):
+            return self.collisions > other.collisions
 
     def __init__(self, filename):
         with open(filename, 'r') as f:
@@ -109,27 +131,36 @@ class WordGame:
             self.__bruteForceLetterBased(newNode, newCurr, idx + 1, solutions, solutionSet)
 
     def bruteForceWordBased(self):
-        trie = wordList().getTrie()
+        order = PriorityQueue()
+        tempOrder = PriorityQueue(order)
 
-        subject = self.properties.keys()
-        idx = 0
-        solutions = list()
+        for checkerSubject, checkerIndices in self.properties.iteritems():
+            collisions = 0
+            for subject, indices in self.properties.iteritems():
+                if checkerSubject == subject:
+                    continue
+
+                for indice in checkerIndices:
+                    if indice in indices:
+                        collisions += 1
+
+            newSubject = self.Subject(checkerSubject, collisions)
+            order.put(newSubject)
+            tempOrder.put(newSubject)
+
+        stack = [] * order.qsize()
+        while not tempOrder.empty():
+            temp = tempOrder.get()
+            stack.append(temp)
+            print temp.name + " with " + str(temp.collisions) + " collisions"
+
         solutionSet = Set()
+        tree = self.CSPNode()
+        currGame = [" "] * self.length
+        self.__bruteForceWordBased(tree, stack, currGame, solutionSet)
 
-        self.__bruteForceWordBased(self.root, subject, [" "] * (self.length), solutions, solutionSet)
-
-        searchOrder = list()
-        nodeTraversal = list()
-
-        nodeTraversal.append("root")
-
-        self.__treeTrace(self.root, searchOrder, nodeTraversal)
-
-        for solution in solutions:
-            if self.verifySolution(solution):
-                print "".join(solution) + " is a valid solution!"
-            else:
-                print "".join(solution) + " is not a valid solution :("
+        for solution in solutionSet:
+            print solution
 
     def __printSpaces(self, depth):
         for i in xrange(0, 4 + 7*depth):
@@ -138,50 +169,60 @@ class WordGame:
     def __treeTrace(self, subroot, search, node):
         pass
 
-    def __bruteForceWordBased(self, subroot, subjects, curr, solutions, solutionSet):
-        if len(subjects) == 0:
-            if "".join(curr) not in solutionSet:
-                solutions.append(subroot.currGame)
-                solutionSet.add("".join(curr))
-            subroot.markSolution()
-            return True
+    def __bruteForceWordBased(self, subroot, order, curr, solutionSet):
+        if len(order) == 0:
+            solutionSet.add("".join(curr))
+            return
 
-        ret = False
-        for subject in subjects:
-            wordList = self.wordList.getWordsBySubject(subject)
-            indices = self.properties[subject]
+        # pdb.set_trace()
+        subject = order.pop()
+        indices = self.properties[subject.name]
+        resultingWord = ""
 
-            temp_subjects = list(subjects)
-            temp_subjects.remove(subject)
-            for word in wordList:
-                first = curr[int(indices[0])]
-                second = curr[int(indices[1])]
-                third = curr[int(indices[2])]
+        for indice in indices:
+            resultingWord += curr[indice]
 
-                if first != " ":
-                    if first != word[0]:
-                        continue
-                if second != " ":
-                    if second != word[1]:
-                        continue
-                if third != " ":
-                    if third != word[2]:
-                        continue
+        words = self.wordList.validAnswers(subject.name, resultingWord)
+        candidates = PriorityQueue()
 
-                temp_curr = list(curr)
-                temp_curr[indices[0]] = word[0]
-                temp_curr[indices[1]] = word[1]
-                temp_curr[indices[2]] = word[2]
-                temp_child = self.CSPNode(temp_curr, word, subject)
+        if not len(order) == 0:
+            nextSubject = order.pop()
+        else:
+            nextSubject = None
 
-                ret = self.__bruteForceWordBased(temp_child, temp_subjects, temp_curr, solutions, solutionSet) or ret
+        if nextSubject is not None:
+            order.append(nextSubject)
+            nextIndices = self.properties[nextSubject.name]
 
-                if ret == False:
-                    subroot.children.append("backtrace")
-                else:
-                    subroot.children.append(temp_child)
+        for word in words:
+            tempCurr = list(curr)
+            i = 0
 
-                continue
+            for indice in indices:
+                tempCurr[indice] = word[i]
+                i += 1
+
+            if nextSubject is not None:
+                resultingWord = ""
+                for indice in nextIndices:
+                    resultingWord += tempCurr[indice]
+
+                answers = self.wordList.validAnswers(nextSubject.name, resultingWord)
+                candidates.put(self.Candidate(word, len(answers), tempCurr))
+            else:
+                candidates.put(self.Candidate(word, 0, tempCurr))
+
+        # print "Order qsize: " + str(len(order))
+        # print "Num candidates: " + str(candidates.qsize())
+
+        while not candidates.empty():
+            candidate = candidates.get()
+            tempCurr = candidate.board
+            newNode = self.CSPNode(tempCurr, candidate.name, subject, subroot)
+            self.__bruteForceWordBased(newNode, order, tempCurr, solutionSet)
+            subroot.children.append(newNode)
+
+        order.append(subject)
 
     def printWordGame(self):
         for k,v in self.properties.iteritems():
@@ -195,7 +236,7 @@ def main():
 
     game = WordGame(gameDirectory + argv[1] + '.game')
     game.printWordGame()
-    game.bruteForceLetterBased()
+    game.bruteForceWordBased()
 
 
 if __name__ == "__main__":
