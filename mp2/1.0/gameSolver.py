@@ -169,9 +169,15 @@ class WordGame:
     def __treeTrace(self, subroot, search, node):
         pass
 
+    def propogateSolution(self, subroot):
+        while not subroot.parent == None:
+            subroot.isSolution()
+            subroot = subroot.parent
+
     def __bruteForceWordBased(self, subroot, order, curr, solutionSet):
         if len(order) == 0:
             solutionSet.add("".join(curr))
+            self.propogateSolution(subroot)
             return
 
         # pdb.set_trace()
