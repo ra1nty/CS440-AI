@@ -3,7 +3,7 @@ import sys
 from sets import Set
 from wordlist import wordList
 from trie import Trie
-from Queue import PriorityQueue
+from Queue import PriorityQueue, Queue
 import pdb
 
 class WordGame:
@@ -48,7 +48,7 @@ class WordGame:
             self.subjects = subjects
 
         def __cmp__(self, other):
-            return self.collisions > other.collisions
+            return self.indice < other.indice
 
     class Subject:
 
@@ -139,6 +139,7 @@ class WordGame:
         candidates = PriorityQueue()
         wordSet = Set()
 
+        print curr
         if len(order) > 0:
             nextIndice = order.pop()
             order.append(nextIndice)
