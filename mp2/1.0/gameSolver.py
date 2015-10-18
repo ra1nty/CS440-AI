@@ -131,15 +131,25 @@ class WordGame:
 
     def __letterBasedSolution(self, subroot, order, curr, solutionSet):
         if len(order) == 0:
+            pdb.set_trace()
+            for subject, indices in self.properties.iteritems():
+                words = self.wordList.getWordsBySubject(subject)
+                resultingWord = ""
+
+                for indice in indices:
+                    resultingWord += curr[indice]
+
+                if not resultingWord in words:
+                    return
+
             solutionSet.add("".join(curr))
-            propogateSolution(subroot)
+            self.propogateSolution(subroot)
             return
 
         indice = order.pop() # Get the indice to fill in
         candidates = PriorityQueue()
         wordSet = Set()
 
-        print curr
         if len(order) > 0:
             nextIndice = order.pop()
             order.append(nextIndice)
@@ -160,11 +170,17 @@ class WordGame:
 
             tempAnswers = self.wordList.validAnswers(subject, resultingWord)
 
+            # Failed since there are no more valid answers
+            if len(tempAnswers) == 0:
+                order.append(indice)
+                return
+
             for answer in tempAnswers:
                 letterSet.add(answer[wordIdx])
 
         # pdb.set_trace()
         for letter in letterSet:
+            tempCurr = list(curr)
             tempCurr[indice.indice] = letter
 
             if nextIndice is not None:
@@ -178,13 +194,20 @@ class WordGame:
                         resultingWord += tempCurr[i]
 
                     nextLevel = self.wordList.validAnswers(sub[0], resultingWord)
+
+                    if len(nextLevel) == 0:
+                        mergeList = list()
+                        break
+
                     for next in nextLevel:
                         mergeSet.add(next)
 
                 for next in mergeSet:
                     mergeList.append(next)
 
-                candidates.put(self.Candidate(answer[wordIdx], len(mergeList), tempCurr))
+                candidates.put(self.Candidate(letter, len(mergeList), tempCurr))
+            else:
+                candidates.put(self.Candidate(letter, 0, tempCurr))
 
         while not candidates.empty():
             candidate = candidates.get()
