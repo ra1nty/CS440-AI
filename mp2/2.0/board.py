@@ -5,6 +5,7 @@ from random import randint
 
 
 class board:
+
   NONE = 0;
   BLUE = 1;
   GREEN = 2;
@@ -43,7 +44,7 @@ class board:
     for x in range(0, self.BOARD_SIZE):
       for y in range (0, self.BOARD_SIZE):
         self.occupant[y][x] = 0;
-        self.vals[y][x] = arrayBoard[y][x];
+        self.vals[y][x] = int(arrayBoard[y][x]);
 
 
 
@@ -124,12 +125,6 @@ class board:
         self.occupant[y - 1][x] = player;
 
 
-
-
-
-
-
-
   # gets current status of the board
   # inputs -- NONE
   # outputs -- list
@@ -155,15 +150,75 @@ class board:
 
     return ret
 
+  # gets points for commando move
+  # inputs -- NONE
+  # outputs -- list containing lists of x,y values of open commando points
+  # For each element in commandolist
+  #   index 0 : x
+  #   index 1 : y
+  def getCommandoPoints(self):
+    commandoList = list();
+    coord = list();
 
+    for x in range(0, self.BOARD_SIZE):
+      for y in range (0, self.BOARD_SIZE):
+        # check to see if point is occupied
+        if self.occupant[y][x] == 0:
+          coord.append(x);
+          coord.append(y);
+          commandoList.append(coord);
+          coord = list();
+
+    return commandoList;
+
+  # gets points for m1 blitz move
+  # inputs -- color
+  # outputs -- list containing lists of x,y values of potential M1 blitz points
+  # For each element in m1Points
+  #   index 0 : x
+  #   index 1 : y
+  def getM1Points(self, color):
+    m1Points = list();
+    coord = list();
+    for x in range(0, self.BOARD_SIZE):
+      for y in range (0, self.BOARD_SIZE):
+        if self.occupant[y][x] == color:
+          # right
+          if x + 1 < self.BOARD_SIZE:
+            coord.append(x + 1);
+            coord.append(y);
+            m1Points.append(coord);
+            coord = list();
+          # left 
+          if x - 1 >= 0:
+            coord.append(x - 1);
+            coord.append(y);
+            m1Points.append(coord);
+            coord = list();
+          # up 
+          if y + 1 < self.BOARD_SIZE:
+            coord.append(x);
+            coord.append(y + 1);
+            m1Points.append(coord);
+            coord = list();            
+          # down
+          if y - 1 >= 0:
+            coord.append(x);
+            coord.append(y - 1);
+            m1Points.append(coord);
+            coord = list();  
+
+    return m1Points;
 
 
 
 
 def main():
   b = board("./game_boards/Keren.txt")
-  b.printBoard()
-  status  = b.getStatus()
-  #print status
+  b.printBoard();
+  b.m1DeathBlitz(1,1,1)
+  points = list();
+  points = b.getM1Points(1)
+  print points;
 
 main()
