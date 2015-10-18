@@ -5,13 +5,15 @@ from random import randint
 
 
 class board:
-
+  # lol no magic numbers
   NONE = 0;
   BLUE = 1;
   GREEN = 2;
   BOARD_SIZE = 6;
+
   # board values for each square
   vals = [[0 for x in range(BOARD_SIZE)] for x in range(BOARD_SIZE)];
+  
   # who occupies each square on the board
   # 0: none
   # 1: blue
@@ -34,12 +36,9 @@ class board:
       if c != '\n':
         if c != '\t' and c != '\r':
           boardRow.append(c)
-
       else:
         arrayBoard.append(boardRow)
         boardRow = list()
-
-    print arrayBoard
 
     for x in range(0, self.BOARD_SIZE):
       for y in range (0, self.BOARD_SIZE):
@@ -48,7 +47,7 @@ class board:
 
 
 
-
+  # print board to the console-- testing purposes only
   def printBoard(self):
     temp = ""
     for y in range(0, self.BOARD_SIZE):
@@ -60,11 +59,16 @@ class board:
       print temp;
       temp = "";
 
-
-  def nodeVal(self, x, y):
+  # get value at a certain point on the board
+  # inputs -- x,y coordinates of the desired value
+  # outputs -- value at that coordinate 
+  def getVal(self, x, y):
     return self.vals[y][x];
 
-  def nodeOccupant(self, x,y):
+  # get occupant at a certain point on the board
+  # inputs -- x,y coordinates of the desired value
+  # outputs -- occupant at that coordinate 
+  def getOccupant(self, x,y):
     return self.occupant[y][x];
 
 
