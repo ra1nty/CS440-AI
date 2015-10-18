@@ -112,19 +112,19 @@ class board:
 
     # check neighbors for opposing pieces and change them
     # right
-    if x + 1 >= self.BOARD_SIZE:
+    if x + 1 < self.BOARD_SIZE:
       if self.occupant[y][x + 1] == opposingPlayer:
         self.occupant[y][x + 1] = player;
     # left 
-    if x - 1 < 0:
+    if x - 1 >= 0:
       if self.occupant[y][x - 1] == opposingPlayer:
         self.occupant[y][x - 1] = player;
     # up 
-    if y + 1 >= self.BOARD_SIZE:
+    if y + 1 < self.BOARD_SIZE:
       if self.occupant[y + 1][x] == opposingPlayer:
         self.occupant[y + 1][x] = player;
     # down
-    if y - 1 < 0:
+    if y - 1 >= 0:
       if self.occupant[y - 1][x] == opposingPlayer:
         self.occupant[y - 1][x] = player;
 
@@ -220,8 +220,7 @@ class board:
 def main():
   b = board("./game_boards/Keren.txt")
   b.printBoard();
-  b.m1DeathBlitz(1,1,1)
-  points = list();
+  b.m1DeathBlitz(1,3,5)
   points = b.getM1Points(1)
   print points;
 
