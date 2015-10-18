@@ -131,7 +131,6 @@ class WordGame:
 
     def __letterBasedSolution(self, subroot, order, curr, solutionSet):
         if len(order) == 0:
-            pdb.set_trace()
             for subject, indices in self.properties.iteritems():
                 words = self.wordList.getWordsBySubject(subject)
                 resultingWord = ""
@@ -330,7 +329,7 @@ def main():
 
     game = WordGame(gameDirectory + argv[1] + '.game')
     game.printWordGame()
-    # game.wordBasedSolution()
+    game.wordBasedSolution()
     game.letterBasedSolution()
 
 
