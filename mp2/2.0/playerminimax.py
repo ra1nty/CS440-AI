@@ -5,6 +5,8 @@ class playerMiniMax:
   BLUE = 1;
   GREEN = 2;
   color = 0;
+  COMMANDO = 3;
+  M1 = 4;
   board;
   def __init__(self, color, board):
     self.color = color;
@@ -12,12 +14,14 @@ class playerMiniMax:
 
   def generateTree(depth):
     root = stateNode(board);
-    generateTreeRecursive(root, 0, depth);
+    generateChildren(root);
 
 
 
-  def generateTreeRecursive(curNode, curDepth, finalDepth):
+
+  def generateTreeRecursive(curNode, curDepth, finalDepth, method, color):
     status = curNode.data.getStatus();
+
     # base case: terminal node or hit final depth
     # calculate depth and return
     if curNode.isTerminal() or curDepth == finalDepth:
@@ -27,12 +31,13 @@ class playerMiniMax:
         curNode.utility = calculateEval(node);
       return curNode;
     else:
-      curDepth += 1;
+
 
 
 
   
-  def generateChildren(node):
+
+
 
   def calculateEval(node):
 

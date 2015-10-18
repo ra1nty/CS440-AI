@@ -22,3 +22,11 @@ class stateNode():
       return True;
     else:
       return False;
+
+  def getNodeStatus(self):
+    return self.data.getStatus();
+
+  def getNodeCommandoChildren(node):
+    return self.data.getCommandoPoints();
+
+  def
