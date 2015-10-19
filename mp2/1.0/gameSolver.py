@@ -129,6 +129,8 @@ class WordGame:
         for solution in solutionSet:
             print solution
 
+        self.treeTrace(tree, 0, self.__printLetterSpaces);
+
     def __letterBasedSolution(self, subroot, order, curr, solutionSet):
         if len(order) == 0:
             for subject, indices in self.properties.iteritems():
@@ -249,16 +251,35 @@ class WordGame:
         for solution in solutionSet:
             print solution
 
+        print "root ->",
+        self.treeTrace(tree, 0, self.__printSpaces)
+
     def __printSpaces(self, depth):
-        for i in xrange(0, 4 + 7*depth):
+        for i in xrange(0, int(7 + 3.5*float(depth))):
             print " ",
 
-    def __treeTrace(self, subroot, search, node):
-        pass
+    def __printLetterSpaces(self, depth):
+        for i in xrange(0, int(5 + 2.5*float(depth))):
+            print " ",
+
+    def treeTrace(self, subroot, level, printspaces):
+        if not subroot.solution:
+            print "backtrace"
+            return
+        else:
+            if len(subroot.children) == 0:
+                print "(found result " + "".join(subroot.currGame) + ")"
+            else:
+                for child in subroot.children:
+                    print child.currWord.strip(" ") + " ->",
+                    self.treeTrace(child, level + 1, printspaces)
+                    printspaces(level - 1)
+
+            print ""
 
     def propogateSolution(self, subroot):
-        while not subroot.parent == None:
-            subroot.isSolution()
+        while not subroot == None:
+            subroot.markSolution()
             subroot = subroot.parent
 
     def __wordBasedSolution(self, subroot, order, curr, solutionSet):
