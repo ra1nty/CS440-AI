@@ -1,9 +1,7 @@
 from board import board
 
 class stateNode():
-  data;
   children = [];
-  color;
   utility = 0;
 
   def __init__(self, board, color):
@@ -22,11 +20,11 @@ class stateNode():
       return True;
     else:
       return False;
+  def setUtility(self, val):
+    self.utility = val;
 
   def getNodeStatus(self):
     return self.data.getStatus();
-
-  def getNodeCommandoChildren(node):
-    return self.data.getCommandoPoints();
-
-  def
+  
+  def generateChildre(self):
+    print; 

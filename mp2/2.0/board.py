@@ -214,6 +214,26 @@ class board:
 
     return m1Points;
 
+    # makes move on the board
+    # inputs -- move array containing 
+    #   index 0 : type of move :
+    #      0 -- commando para drop 
+    #      1 -- m1 death blitz
+    #   index 1 : x position of the move
+    #   index 2 : y position of the move 
+    #   index 3 : color of the player
+    # outputs -- NONE
+    def makeMove(self, move):
+      if move[0] == 0:
+        self.commandoParaDrop(move[3], move[1], move[2]);
+      else:
+        self.m1DeathBlitz(move[3], move[1], move[2]);
+        
+      return self;
+
+
+
+
 
 
 
