@@ -233,6 +233,8 @@ class WordGame:
                     if indice in indices:
                         collisions += 1
 
+            collisions = collisions * 20 - len(self.wordList.getWordsBySubject(checkerSubject))
+
             newSubject = self.Subject(checkerSubject, collisions)
             order.put(newSubject)
             tempOrder.put(newSubject)
