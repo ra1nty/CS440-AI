@@ -4,6 +4,7 @@ from Queue import Queue
 import pdb
 import json
 from sets import Set
+import pprint
 
 def abs(num):
 	if num < 0:
@@ -31,13 +32,18 @@ class Map:
 
 	def generate(self):
 		first = self.__getPoint()
-		n = 150
+		n = 30
+		vertices = Set()
 
-		while (n):	
+		while (n):
 			second = self.__findClosestPoint(first)
 
-			if not second == (-1,-1):
+			if not second in vertices:
 				n -= 1
+				vertices.add(second)
+
+
+			if not second == (-1,-1):
 				self.__dset.union(first[1] * self.__size + first[0], second[1] * self.__size + second[0])
 
 				self.__map[first[0]][first[1]]['connected'].append(second)
@@ -65,11 +71,14 @@ class Map:
 			for row in self.__map:
 				for elem in row:
 					graph.append(elem)
-					
+
 			output['graph'] = graph
 			output['edges'] = self.makeEdgeList()
 
 			f.write(json.dumps(output))
+
+			pp = pprint.PrettyPrinter(indent=4)
+			pp.pprint(output)
 
 	def makeEdgeList(self):
 		edgeList = {}
@@ -157,13 +166,13 @@ class Map:
 			segEndY = segEnd[1]
 
 			denom = (segEndY - segStartY)*(endX - startX) - (segEndX - segStartX)*(endY - startY)
-			
+
 			if denom == 0:
 				return False
 
 			Ua = ((segEndX - segStartX)*(startY - segStartY) - (segEndY - segStartY)*(startX - segStartX))/denom
 			Ub = ((endX - startX)*(startY - segStartY) - (endY - startY)*(startX - segStartX))/denom
-			
+
 			Ua = abs(Ua)
 			Ub = abs(Ub)
 
