@@ -2,6 +2,7 @@ from dsets import DSet
 import random
 from Queue import Queue
 import pdb
+import json
 
 def abs(num):
 	if num < 0:
@@ -17,13 +18,13 @@ class Map:
 		for y in range(0, size):
 			row = list()
 			for x in range(0, size):
-				temp = dict(connectedFrom=list(), connectedTo=(-1,-1))
+				temp = dict(connected=list())
 				row.append(temp)
 			self.__map.append(row)
 
 		self.__dset = DSet(size * size)
 		self.__size = size
-		self.__segments = []
+		self.__edges = []
 		self.generate()
 		self.printMap()
 
@@ -34,13 +35,12 @@ class Map:
 			second = self.__findClosestPoint(first)
 
 			if not second == (0,0):
-				self.printMap()
 				self.__dset.union(first[1] * self.__size + first[0], second[1] * self.__size + second[0])
 
-				self.__map[first[0]][first[1]]['connectedTo'] = second
-				self.__map[second[0]][second[1]]['connectedFrom'].append(first)
+				self.__map[first[0]][first[1]]['connected'].append(second)
+				self.__map[second[0]][second[1]]['connected'].append(first)
 
-				self.__segments.append((first, second))
+				self.__edges.append((first, second))
 				first = second
 			else:
 				break
@@ -51,8 +51,35 @@ class Map:
 				print elem,
 			print ""
 
-		for segment in self.__segments:
+		for segment in self.__edges:
 			print str(segment[0]) + "->" + str(segment[1])
+
+		with open('map.json', 'w') as f:
+			graph = list()
+			output = {}
+
+			output['size'] = self.__size
+			for row in self.__map:
+				for elem in row:
+					graph.append(elem)
+					
+			output['graph'] = graph
+			output['edges'] = self.makeEdgeList()
+
+			f.write(json.dumps(output))
+
+	def makeEdgeList(self):
+		edgeList = {}
+		for edge in self.__edges:
+			if not str(edge[0]) in edgeList:
+				edgeList[str(edge[0])] = list()
+			edgeList[str(edge[0])].append(edge[1])
+
+			if not str(edge[1]) in edgeList:
+				edgeList[str(edge[1])] = list()
+			edgeList[str(edge[1])].append(edge[0])
+
+		return edgeList
 
 	def getCoordinate(self, coord):
 		return coord[1] * self.__size + coord[0]
@@ -88,10 +115,9 @@ class Map:
 
 		return (0,0)
 
-	def connected(self, coord, second):
-		return (coord in self.__map[second[0]][second[1]]['connectedFrom'] or 
-				second == self.__map[coord[0]][coord[1]]['connectedTo'] or
-				coord == self.__map[second[0]][second[1]])
+	def connected(self, first, second):
+		return (first in self.__map[second[0]][second[1]]['connected'] or
+				second in self.__map[first[0]][first[1]]['connected'])
 
 	def __getPoint(self):
 		x = random.randint(0, self.__size - 1)
@@ -107,7 +133,7 @@ class Map:
 		endX = end[0]
 		endY = end[1]
 
-		for segment in self.__segments:
+		for segment in self.__edges:
 			segStart = segment[0]
 			segEnd = segment[1]
 
@@ -135,4 +161,4 @@ class Map:
 
 
 if __name__ == "__main__":
-	Map(5)
+	Map(10)
