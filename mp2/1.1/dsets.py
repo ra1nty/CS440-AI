@@ -1,5 +1,3 @@
-__author__ = "Jeffrey Huang"
-
 class DSet:
 
 	def __init__(self, size):

@@ -90,7 +90,8 @@ class Map:
 
 	def connected(self, coord, second):
 		return (coord in self.__map[second[0]][second[1]]['connectedFrom'] or 
-				second == self.__map[coord[0]][coord[1]]['connectedTo'])
+				second == self.__map[coord[0]][coord[1]]['connectedTo'] or
+				coord == self.__map[second[0]][second[1]])
 
 	def __getPoint(self):
 		x = random.randint(0, self.__size - 1)
