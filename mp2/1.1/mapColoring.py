@@ -1,5 +1,3 @@
-__author__ = "Jeffrey Huang"
-
 from dsets import DSet
 import random
 from Queue import Queue
@@ -100,6 +98,7 @@ class Map:
 
 		return (x, y)
 
+	# From http://paulbourke.net/geometry/pointlineplane/
 	def doesIntersect(self, start, end):
 		startX = start[0]
 		startY = start[1]
