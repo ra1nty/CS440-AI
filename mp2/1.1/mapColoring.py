@@ -3,6 +3,7 @@ import random
 from Queue import Queue
 import pdb
 import json
+from sets import Set
 
 def abs(num):
 	if num < 0:
@@ -30,11 +31,13 @@ class Map:
 
 	def generate(self):
 		first = self.__getPoint()
+		n = 150
 
-		while (True):	
+		while (n):	
 			second = self.__findClosestPoint(first)
 
-			if not second == (0,0):
+			if not second == (-1,-1):
+				n -= 1
 				self.__dset.union(first[1] * self.__size + first[0], second[1] * self.__size + second[0])
 
 				self.__map[first[0]][first[1]]['connected'].append(second)
@@ -87,11 +90,19 @@ class Map:
 	def __findClosestPoint(self, first):
 		nextPoint = Queue()
 		nextPoint.put(first)
+		visited = Set()
 
 		while not nextPoint.empty():
 			temp = nextPoint.get()
 
+			# If already visited then you don't want to visit it again
+			if temp in visited:
+				continue
+
+			visited.add(temp)
+
 			if not temp == first:
+				# If not connected and doesn't intersect
 				if (not self.connected(first, temp) and
 					not self.doesIntersect(first, temp)):
 					return temp
@@ -113,8 +124,10 @@ class Map:
 			if temp[0] - 1 >= 0:
 				nextPoint.put((temp[0] - 1, temp[1]))
 
-		return (0,0)
+		return (-1,-1)
 
+	# Returns true if first or second is in the respective connected list
+	# False if its not in either one
 	def connected(self, first, second):
 		return (first in self.__map[second[0]][second[1]]['connected'] or
 				second in self.__map[first[0]][first[1]]['connected'])
