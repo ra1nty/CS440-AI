@@ -1,6 +1,7 @@
 import sys
 import pdb
 import os
+import copy
 from random import randint
 
 
@@ -25,26 +26,32 @@ class board:
   # parses file into board values 
   def __init__(self, filename):
     i = 0;
+    if filename is not None:
+      with open(filename, 'r') as f:
+        temp = f.read()
 
-    with open(filename, 'r') as f:
-      temp = f.read()
+      arrayBoard = list()
+      boardRow = list()
 
-    arrayBoard = list()
-    boardRow = list()
+      t2 = temp.split('\n');
+      for c in t2:
+        d = c.split();
+        for x in d:
+          boardRow.append(x);
+          print x;
+        arrayBoard.append(boardRow);
+        boardRow = list();
+        
+      for x in range(0, self.BOARD_SIZE):
+        for y in range (0, self.BOARD_SIZE):
+          self.occupant[y][x] = 0;
+          self.vals[y][x] = int(arrayBoard[y][x]);
 
-    for c in temp:
-      if c != '\n':
-        if c != '\t' and c != '\r':
-          boardRow.append(c)
-      else:
-        arrayBoard.append(boardRow)
-        boardRow = list()
 
-    for x in range(0, self.BOARD_SIZE):
-      for y in range (0, self.BOARD_SIZE):
-        self.occupant[y][x] = 0;
-        self.vals[y][x] = int(arrayBoard[y][x]);
-
+  def copycctor(self, other):
+    other.vals = copy.deepcopy(self.vals);
+    other.occupant = copy.deepcopy(self.occupant);
+    return other;
 
 
   # print board to the console-- testing purposes only
@@ -53,9 +60,9 @@ class board:
     for y in range(0, self.BOARD_SIZE):
       for x in range(0, self.BOARD_SIZE):
         if(self.vals[y][x] < 10):
-          temp = temp + str(self.vals[y][x]) + "  ";
+          temp = temp + str(self.vals[y][x]) +"(" + str(self.occupant[y][x]) + ")"  + "  ";
         else:
-          temp = temp + str(self.vals[y][x]) + " ";
+          temp = temp + str(self.vals[y][x]) + "(" + str(self.occupant[y][x]) + ")" + " ";
       print temp;
       temp = "";
 
@@ -99,9 +106,9 @@ class board:
   # executes M1 Death Blitz on board
   # inputs -- x, y : location on where to drop
   #           player =  green (2) or blue (1) 
-  # outputs -- total values earned if successful, -1 if failed
+  # outputs -- whether or not it invades opposing piece
   def m1DeathBlitz(self, player, x, y):
-    ret = 0;
+    ret = False;
     opposingPlayer = 0;
     if player == self.GREEN:
       opposingPlayer = self.BLUE;
@@ -115,18 +122,23 @@ class board:
     if x + 1 < self.BOARD_SIZE:
       if self.occupant[y][x + 1] == opposingPlayer:
         self.occupant[y][x + 1] = player;
+        ret =  True;
     # left 
     if x - 1 >= 0:
       if self.occupant[y][x - 1] == opposingPlayer:
         self.occupant[y][x - 1] = player;
+        ret = True;
     # up 
     if y + 1 < self.BOARD_SIZE:
       if self.occupant[y + 1][x] == opposingPlayer:
         self.occupant[y + 1][x] = player;
+        ret = True;
     # down
     if y - 1 >= 0:
       if self.occupant[y - 1][x] == opposingPlayer:
         self.occupant[y - 1][x] = player;
+        ret = True;
+    return ret;
 
 
   # gets current status of the board
@@ -214,22 +226,32 @@ class board:
 
     return m1Points;
 
-    # makes move on the board
-    # inputs -- move array containing 
-    #   index 0 : type of move :
-    #      0 -- commando para drop 
-    #      1 -- m1 death blitz
-    #   index 1 : x position of the move
-    #   index 2 : y position of the move 
-    #   index 3 : color of the player
-    # outputs -- NONE
-    def makeMove(self, move):
-      if move[0] == 0:
-        self.commandoParaDrop(move[3], move[1], move[2]);
-      else:
-        self.m1DeathBlitz(move[3], move[1], move[2]);
-        
-      return self;
+  # makes move on the board
+  # inputs -- move array containing 
+  #   index 0 : type of move :
+  #      0 -- commando para drop 
+  #      1 -- m1 death blitz
+  #   index 1 : x position of the move
+  #   index 2 : y position of the move 
+  #   index 3 : color of the player
+  # outputs -- NONE
+  def makeMove(self, move):
+    if move[0] == 0:
+      self.commandoParaDrop(move[3], move[1], move[2]);
+    elif move[0] == 1:
+      self.m1DeathBlitz(move[3], move[1], move[2]);
+
+    return self;
+  def printOccupants(self):
+    temp = ""
+    for y in range(0, self.BOARD_SIZE):
+      for x in range(0, self.BOARD_SIZE):
+        if(self.vals[y][x] < 10):
+          temp = temp + str(self.occupant[y][x]) + "  ";
+        else:
+          temp = temp + str(self.occupant[y][x]) + " ";
+      print temp;
+      temp = "";
 
 
 
@@ -237,11 +259,12 @@ class board:
 
 
 
-def main():
-  b = board("./game_boards/Keren.txt")
-  b.printBoard();
-  b.m1DeathBlitz(1,3,5)
-  points = b.getM1Points(1)
-  print points;
 
-main()
+#def main():
+  #b = board("./game_boards/Keren.txt")
+  #b.printBoard();
+  #b.m1DeathBlitz(1,3,5)
+  #points = b.getM1Points(1)
+  #print points;
+
+#main()
