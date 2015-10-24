@@ -232,14 +232,8 @@ class WordGame:
                 for indice in checkerIndices:
                     if indice in indices:
                         collisions += 1
-<<<<<<< HEAD
-
+                        
             collisions = collisions * 20 - len(self.wordList.getWordsBySubject(checkerSubject))
-
-=======
-            
-            collisions = 10 * collisions - len(self.wordList.getWordsBySubject(checkerSubject))
->>>>>>> 766085c8e547df1c014818bb20faf63e24572e7a
             newSubject = self.Subject(checkerSubject, collisions)
             order.put(newSubject)
             tempOrder.put(newSubject)
@@ -251,7 +245,7 @@ class WordGame:
             stack.append(temp)
             # print temp.name + " with " + str(temp.collisions) + " collisions"
             print temp.name + "->",
-        
+
         print ""
 
         solutionSet = Set()

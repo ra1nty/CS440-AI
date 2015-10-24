@@ -1,5 +1,3 @@
-__author__ = "Jeffrey Huang"
-
 class DSet:
 
 	def __init__(self, size):
@@ -26,9 +24,12 @@ class DSet:
 	def isSameSet(self, root1, root2):
 		return self.find(root1) == self.find(root2)
 
+	def freeNode(self, root):
+		return self.__elems[root] == -1
+
 	def find(self, root):
 		if (self.__elems[root] >= 0):
-			tempElem = find(self.__elems[root])
+			tempElem = self.find(self.__elems[root])
 			self.__elems[root] = tempElem
 			return tempElem
 
