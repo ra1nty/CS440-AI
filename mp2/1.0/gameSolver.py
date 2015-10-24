@@ -232,26 +232,35 @@ class WordGame:
                 for indice in checkerIndices:
                     if indice in indices:
                         collisions += 1
+<<<<<<< HEAD
 
             collisions = collisions * 20 - len(self.wordList.getWordsBySubject(checkerSubject))
 
+=======
+            
+            collisions = 10 * collisions - len(self.wordList.getWordsBySubject(checkerSubject))
+>>>>>>> 766085c8e547df1c014818bb20faf63e24572e7a
             newSubject = self.Subject(checkerSubject, collisions)
             order.put(newSubject)
             tempOrder.put(newSubject)
 
         stack = [] * order.qsize()
+        print "search order:",
         while not tempOrder.empty():
             temp = tempOrder.get()
             stack.append(temp)
-            print temp.name + " with " + str(temp.collisions) + " collisions"
+            # print temp.name + " with " + str(temp.collisions) + " collisions"
+            print temp.name + "->",
+        
+        print ""
 
         solutionSet = Set()
         tree = self.CSPNode()
         currGame = [" "] * self.length
         self.__wordBasedSolution(tree, stack, currGame, solutionSet)
-
-        for solution in solutionSet:
-            print solution
+#
+#        for solution in solutionSet:
+#            print solution
 
         print "root ->",
         self.treeTrace(tree, 0, self.__printSpaces)

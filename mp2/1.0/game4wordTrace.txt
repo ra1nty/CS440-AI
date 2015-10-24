@@ -1,0 +1,13 @@
+search order: body->pronoun->computer->interjection->verb->noun
+root -> EAR -> backtrace
+        EYE -> FEW -> backtrace
+               HER -> HIT -> HEY -> DIE -> IRE -> (found result HEDITYRE)
+                                    LIE -> IRE -> (found result HELITYRE)
+                                    TIE -> IRE -> (found result HETITYRE)
+        HIP -> backtrace
+        TOE -> backtrace
+        LIP -> backtrace
+        LEG -> backtrace
+        ARM -> backtrace
+        JAW -> backtrace
+        RIB -> backtrace

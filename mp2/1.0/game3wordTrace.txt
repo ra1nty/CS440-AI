@@ -1,0 +1,22 @@
+root -> ROC -> backtrace
+        NEB -> backtrace
+        ALP -> PEA -> ASP -> SUP -> LEA -> (found result ASULPEA)
+               PIE -> ASP -> SUP -> LIE -> (found result ASULPIE)
+        ZHO -> backtrace
+        IFE -> backtrace
+        PUY -> backtrace
+        KED -> backtrace
+        DAL -> backtrace
+        PED -> backtrace
+        GAT -> backtrace
+        EFT -> backtrace
+        YAY -> backtrace
+        BOT -> backtrace
+        TED -> backtrace
+        RIA -> backtrace
+        TOW -> backtrace
+        IVI -> backtrace
+        DAW -> backtrace
+        VUG -> backtrace
+        MEW -> backtrace
+        JUG -> backtrace

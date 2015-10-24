@@ -1,0 +1,12 @@
+root -> EYE -> NAE -> MAD -> NEE -> MAN -> DYE -> (found result NNEMANDYE)
+                             WEE -> MAN -> DYE -> (found result NWEMANDYE)
+                      SAD -> NEE -> SAY -> DYE -> (found result NNESAYDYE)
+                             WEE -> SAY -> DYE -> (found result NWESAYDYE)
+        JAW -> backtrace
+        TOE -> backtrace
+        ARM -> backtrace
+        LEG -> backtrace
+        LIP -> backtrace
+        HIP -> backtrace
+        EAR -> backtrace
+        RIB -> backtrace
