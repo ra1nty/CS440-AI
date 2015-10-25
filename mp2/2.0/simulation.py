@@ -91,10 +91,15 @@ def main():
   print "Smolensk Minimax vs Minimax"
   b = board("./game_boards/Smolensk.txt");
   p1 = MinimaxPlayer(1);
+  
   p2 = MinimaxPlayer(2);
+
   s = Simulation(b);
   s.run(p1,p2, False);
-
+  
+  print p1.num;  
+  print p2.num;
+  
   print "Westerplatte Minimax vs Minimax"
   b = board("./game_boards/Westerplatte.txt");
   p1 = MinimaxPlayer(1);
