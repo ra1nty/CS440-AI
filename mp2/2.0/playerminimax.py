@@ -15,7 +15,7 @@ class MinimaxPlayer:
   
 
   def generateMove(self, curGame):
-    move = self.minimax(curGame, 4, self.color,0);
+    move = self.minimax(curGame, 6, self.color,0);
     ret =  list();
     ret.append(move[2]);
     ret.append(move[0]);
@@ -28,7 +28,8 @@ class MinimaxPlayer:
   def evalFn(self, board):
     status = board.getStatus();
     maxScore = status[1] + status[2];
-    ret = status[1]/maxScore - status[2]/maxScore;
+
+    ret = float(status[1])/maxScore - float(status[2])/maxScore;
     return ret;
 
 

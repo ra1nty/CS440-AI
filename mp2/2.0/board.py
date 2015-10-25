@@ -38,10 +38,9 @@ class board:
         d = c.split();
         for x in d:
           boardRow.append(x);
-          print x;
         arrayBoard.append(boardRow);
         boardRow = list();
-        
+
       for x in range(0, self.BOARD_SIZE):
         for y in range (0, self.BOARD_SIZE):
           self.occupant[y][x] = 0;
@@ -201,28 +200,32 @@ class board:
         if self.occupant[y][x] == color:
           # right
           if x + 1 < self.BOARD_SIZE:
-            coord.append(x + 1);
-            coord.append(y);
-            m1Points.append(coord);
-            coord = list();
+            if self.occupant[y][x + 1] == 0:
+              coord.append(x + 1);
+              coord.append(y);
+              m1Points.append(coord);
+              coord = list();
           # left 
           if x - 1 >= 0:
-            coord.append(x - 1);
-            coord.append(y);
-            m1Points.append(coord);
-            coord = list();
+            if self.occupant[y][x - 1] == 0:
+              coord.append(x - 1);
+              coord.append(y);
+              m1Points.append(coord);
+              coord = list();
           # up 
           if y + 1 < self.BOARD_SIZE:
-            coord.append(x);
-            coord.append(y + 1);
-            m1Points.append(coord);
-            coord = list();            
+            if self.occupant[y + 1][x] == 0:
+              coord.append(x);
+              coord.append(y + 1);
+              m1Points.append(coord);
+              coord = list();            
           # down
           if y - 1 >= 0:
-            coord.append(x);
-            coord.append(y - 1);
-            m1Points.append(coord);
-            coord = list();  
+            if self.occupant[y - 1][x] == 0:
+              coord.append(x);
+              coord.append(y - 1);
+              m1Points.append(coord);
+              coord = list();  
 
     return m1Points;
 
