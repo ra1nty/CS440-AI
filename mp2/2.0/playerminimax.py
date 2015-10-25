@@ -30,6 +30,7 @@ class MinimaxPlayer:
     maxScore = status[1] + status[2];
 
     ret = float(status[1])/maxScore - float(status[2])/maxScore;
+    print ret;
     return ret;
 
 
