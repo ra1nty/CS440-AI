@@ -1,0 +1,10 @@
+search order: number->container->body->adverb->music->animal->noun
+root -> TEN -> TIN -> TOE -> NON -> TIE -> HEN -> ION -> (found result IHTTNOIEN)
+                                                  TON -> (found result THTTNOIEN)
+                             YON -> TIE -> HEN -> ION -> (found result IHTTYOIEN)
+                                                  TON -> (found result THTTYOIEN)
+               CAN -> backtrace
+               BIN -> backtrace
+        SIX -> backtrace
+        TWO -> backtrace
+        ONE -> backtrace

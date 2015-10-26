@@ -24,75 +24,32 @@ class wordList:
                 pass
 
         self.generateWordSubjectRel()
-        self.trieFilled = False
-        self.generateSubjectTrie()
 
-    def autoCompleteSubjectLetter(self, subjects, curr, currIdx):
-        joinedList = list()
-        tempList = list()
-        letterSet = Set()
+    def validAnswers(self, subject, word):
+        answers = list()
 
-        for subject in subjects:
-            if subject in self.subjectTrie:
-                tempList = self.subjectTrie[subject].autoComplete(curr)
-            else:
-                continue
+        if subject in self.sections:
+            words = self.sections[subject]
+        else:
+            return answers
 
-            tempSet = Set()
-            for word in tempList:
-                tempSet.add(word)
+        for w in words:
+            match = 1
+            for i in xrange(0, len(word)):
+                if word[i] == " ":
+                    continue
 
-            for word in joinedList:
-                tempSet.add(word)
+                if w[i] == word[i]:
+                    continue
+                else:
+                    match = 0
+                    break
 
-            newList = list()
-            for word in tempSet:
-                newList.append(word)
+            if match:
+                answers.append(w)
 
-            joinedList = newList
+        return answers
 
-        for word in joinedList:
-            letterSet.add(word[currIdx])
-
-        candidates = list()
-        for letter in letterSet:
-            candidates.append(letter)
-
-
-        return candidates
-
-
-    def autoCompleteSubject(self, subjects, curr):
-        intersectList = list()
-        tempList = list()
-
-        for subject in subjects:
-            if subject in self.subjectTrie:
-                tempList = self.subjectTrie[subject].autoComplete(curr)
-            else:
-                continue
-            if not len(intersectList) == 0:
-                tempSet = Set()
-                for word in intersectList:
-                    tempSet.add(word)
-
-                intersectList = list()
-                for word in tempList:
-                    if word not in tempSet:
-                        intersectList.append(word)
-                for word in tempSet:
-                    intersectList.append(word)
-            else:
-                intersectList = tempList
-
-        return intersectList
-
-    def generateSubjectTrie(self):
-        self.subjectTrie = dict()
-        for subject, words in self.sections.iteritems():
-            self.subjectTrie[subject] = Trie()
-            for word in words:
-                self.subjectTrie[subject].insert(word)
 
     def generateWordSubjectRel(self):
         for subject, words in self.sections.iteritems():
@@ -118,13 +75,6 @@ class wordList:
 
     def getWordsBySubject(self, subject):
         return self.sections[subject]
-
-    def getTrie(self):
-        if not self.trieFilled:
-            for word in self.wordSubjectRelation.keys():
-                self.trie.insert(word)
-            self.trieFilled = True
-        return self.trie
 
     def printWordList(self):
         for k, v in self.sections.iteritems():

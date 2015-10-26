@@ -1,0 +1,30 @@
+search order: noun->verb->interjection->pronoun->math->palindrome
+root -> DAD -> backtrace
+        SIS -> SIN -> HIS -> HAW -> SAW -> SAC -> (found result HSIAIWNCS)
+                                           SAP -> (found result HSIAIWNPS)
+                             HOW -> SOW -> SOD -> (found result HSIOIWNDS)
+                                           SOY -> (found result HSIOIWNYS)
+                             HUH -> backtrace
+                             HEM -> backtrace
+                             HUM -> backtrace
+                             HMM -> backtrace
+                             HAH -> backtrace
+                             HEY -> backtrace
+                      ITS -> backtrace
+        BUB -> backtrace
+        EWE -> backtrace
+        WOW -> backtrace
+        TUT -> backtrace
+        TOT -> backtrace
+        POP -> backtrace
+        TNT -> backtrace
+        PEP -> backtrace
+        MOM -> backtrace
+        HUH -> backtrace
+        HAH -> backtrace
+        GAG -> backtrace
+        EVE -> backtrace
+        EYE -> backtrace
+        DID -> backtrace
+        AHA -> backtrace
+        BIB -> backtrace
