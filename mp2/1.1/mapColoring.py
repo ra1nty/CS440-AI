@@ -27,12 +27,19 @@ class Map:
 		self.__dset = DSet(size * size)
 		self.__size = size
 		self.__edges = []
+		self.__first = (-1, -1)
 		self.generate()
-		self.printMap()
+		self.__edgeList = self.makeEdgeList()
+
+	def getInitialPoint():
+		return self.__first
+
+	def getEdges(self, point):
+		return self.__edgeList[str(point)]
 
 	def generate(self):
-		first = self.__getPoint()
-		n = 30
+		self.__first = first = self.__getPoint()
+		self.n = n = 30
 		vertices = Set()
 
 		while (n):
@@ -41,7 +48,6 @@ class Map:
 			if not second in vertices:
 				n -= 1
 				vertices.add(second)
-
 
 			if not second == (-1,-1):
 				self.__dset.union(first[1] * self.__size + first[0], second[1] * self.__size + second[0])
@@ -54,7 +60,7 @@ class Map:
 			else:
 				break
 
-	def printMap(self):
+	def printMap(self, name):
 		for row in self.__map:
 			for elem in row:
 				print elem,
@@ -63,7 +69,7 @@ class Map:
 		for segment in self.__edges:
 			print str(segment[0]) + "->" + str(segment[1])
 
-		with open('map.json', 'w') as f:
+		with open(name, 'w') as f:
 			graph = list()
 			output = {}
 
@@ -149,38 +155,82 @@ class Map:
 
 	# From http://paulbourke.net/geometry/pointlineplane/
 	def doesIntersect(self, start, end):
-		startX = start[0]
-		startY = start[1]
+		mua = 0.0
+		mub = 0.0
 
-		endX = end[0]
-		endY = end[1]
+		denom = 0.0
+		numera = 0.0
+		numerb = 0.0
 
-		for segment in self.__edges:
-			segStart = segment[0]
-			segEnd = segment[1]
+		x1 = start[0]
+		y1 = start[1]
 
-			segStartX = segStart[0]
-			segStartY = segStart[1]
+		x2 = end[0]
+		y2 = end[1]
 
-			segEndX = segEnd[0]
-			segEndY = segEnd[1]
+		EPS = 0.0
+		intersect = False
 
-			denom = (segEndY - segStartY)*(endX - startX) - (segEndX - segStartX)*(endY - startY)
+		for edge in self.__edges:
+			x3 = edge[0][0]
+			y3 = edge[0][1]
 
-			if denom == 0:
-				return False
+			x4 = edge[1][0]
+			y4 = edge[1][0]
 
-			Ua = ((segEndX - segStartX)*(startY - segStartY) - (segEndY - segStartY)*(startX - segStartX))/denom
-			Ub = ((endX - startX)*(startY - segStartY) - (endY - startY)*(startX - segStartX))/denom
+			denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+			numera = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)
+			numerb = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)
 
-			Ua = abs(Ua)
-			Ub = abs(Ub)
-
-			if (Ua < 1 and Ua > 0) or (Ub < 1 and Ub > 0):
+			if (abs(numera) <= EPS and 
+				abs(numerb) <= EPS and
+				abs(denom) <= EPS):
 				return True
 
-		return False
+			if (abs(denom) <= EPS):
+				continue
+			else:
+				mua = numera/denom
+				mub = numerb/denom
 
+				if (mua < 0 or mua > 1 or mub < 0 or mub > 1):
+					continue
+			return False
+
+		return intersect
+
+def ColorMap(randomMap):
+	colors = ['R', 'G', 'B', 'Y']
+	initialPoint = randomMap.getInitialPoint()
+	visited = Set()
+	nodeTree = dict()
+	_ColorMap(currMap=randomMap, curr=initialPoint, tree=nodeTree, visited=visited, colors=colors)
+	pass
+
+class colorNode:
+
+	def __init__(self, color, point, edges):
+		self.color = color
+		self.point = point
+		self.edges = edges
+
+def _ColorMap(currMap=randomMap, curr=currPoint, tree=nodeTree, visited=visitedSet, colors=setOfColors):
+	edges = randomMap.getEdges(currPoint)
+
+	unvisited = list()
+	for edge in edges:
+		if edge in visitedSet:
+			continue
+		unvisited.append(edge)
+
+	for edge in unvisited:
+		edges = randomMap.getEdges(edge)
+
+	pass
 
 if __name__ == "__main__":
-	Map(10)
+	name = "map"
+	for i in range(0, 10):
+		Map(8).printMap(name + str(i) + '.json')
+
+	ColorMap(Map(8))
