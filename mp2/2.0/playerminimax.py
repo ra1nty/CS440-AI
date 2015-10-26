@@ -17,7 +17,7 @@ class MinimaxPlayer:
 
   def generateMove(self, curGame):
     self.moves += 1;
-    move = self.minimax(curGame,3, self.color);
+    move = self.minimax(curGame,1, self.color);
     ret =  list();
     ret.append(move[2]);
     ret.append(move[0]);
