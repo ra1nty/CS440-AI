@@ -3,18 +3,20 @@ from board import board
 from node import stateNode
 
 # define BLUE as Maximizing player
-# define 
+# define GREEN as minimizing player
 class MinimaxPlayer:
   BLUE = 1; # MAX, starts first
   GREEN = 2; # MIN starts second 
   color = 0;
-  num = 0;
+  Nodes = 0;
+  moves = 0;
 
   def __init__(self, color):
     self.color = color;
   
 
   def generateMove(self, curGame):
+    self.moves += 1;
     move = self.minimax(curGame,3, self.color);
     ret =  list();
     ret.append(move[2]);
@@ -44,8 +46,8 @@ class MinimaxPlayer:
   #   0: commando Para Drop
   #   1: M1 Death Blitz 
   def minimax(self, board, depth, color):
-    #self.num = self.num + 1;
-    #print self.num;
+    self.Nodes = self.Nodes + 1;
+
     # initialize variables
     bestScore = 0;
     currentScore = 0;
@@ -110,7 +112,6 @@ class MinimaxPlayer:
         invades = board.m1DeathBlitz(color, m1Move[0], m1Move[1], invaded);
         # only consider M1 if its effect is different from commando
         if invades is True:
-          self.num = self.num + 1;
           result = self.minimax(board, depth - 1, opColor);
           currentScore = result[3];
           # player is maximizer

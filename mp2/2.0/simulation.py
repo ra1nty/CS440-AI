@@ -108,6 +108,11 @@ def main():
   s = Simulation(b);
 
   s.run(p1,p2, False);
+  print "Player 1 expanded Nodes: ", p1.Nodes;  
+  print "Player 1 Moves: ", p1.moves;  
+
+  print "Player 2 Expanded Nodes: ", p2.Nodes;
+  print "Player 2 Moves: ", p2.moves;
 
   print;
 
@@ -117,6 +122,11 @@ def main():
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
   s.run(p1,p2, False);
+  print "Player 1 expanded Nodes: ", p1.Nodes;  
+  print "Player 1 Moves: ", p1.moves;  
+
+  print "Player 2 Expanded Nodes: ", p2.Nodes;
+  print "Player 2 Moves: ", p2.moves;  
 
   print;
   print "Sevastopol Minimax vs Minimax"
@@ -125,6 +135,11 @@ def main():
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
   s.run(p1,p2, False);
+  print "Player 1 expanded Nodes: ", p1.Nodes;  
+  print "Player 1 Moves: ", p1.moves;  
+
+  print "Player 2 Expanded Nodes: ", p2.Nodes;
+  print "Player 2 Moves: ", p2.moves;
 
   print;
 
@@ -138,8 +153,11 @@ def main():
   s = Simulation(b);
   s.run(p1,p2, False);
   
-  print p1.num;  
-  print p2.num;
+  print "Player 1 expanded Nodes: ", p1.Nodes;  
+  print "Player 1 Moves: ", p1.moves;  
+
+  print "Player 2 Expanded Nodes: ", p2.Nodes;
+  print "Player 2 Moves: ", p2.moves;
   print;
 
   print "Westerplatte Minimax vs Minimax"
@@ -148,6 +166,11 @@ def main():
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
   s.run(p1,p2, False);
+  print "Player 1 expanded Nodes: ", p1.Nodes;  
+  print "Player 1 Moves: ", p1.moves;  
+
+  print "Player 2 Expanded Nodes: ", p2.Nodes;
+  print "Player 2 Moves: ", p2.moves;
 
 
 
