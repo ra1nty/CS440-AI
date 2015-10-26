@@ -7,6 +7,7 @@ from sets import Set
 import pprint
 import png
 import Image
+from time import sleep
 
 def abs(num):
     if num < 0:
@@ -41,7 +42,7 @@ class Map:
 
     def generate(self):
         self.__first = first = self.__getPoint()
-        self.n = n = 30
+        self.n = n = 15
         vertices = Set()
 
         while (n):
@@ -283,6 +284,7 @@ class colorNode:
 
 def _ColorMap(currMap, curr, tree, visited, colors):
     remaining = False
+    visited.add(curr)
 
     for point, node in tree.iteritems():
         if node.color == 'N':
@@ -290,6 +292,7 @@ def _ColorMap(currMap, curr, tree, visited, colors):
             break
 
     if remaining == False:
+        pdb.set_trace()
         return
 
     edges = currMap.getEdges(curr)
@@ -300,29 +303,33 @@ def _ColorMap(currMap, curr, tree, visited, colors):
     origColor = currNode.color
 
     for point in edges:
-        if point in visited:
-            continue
-
         tempPoint = tree[str(point)]
         if (tempPoint.color in nextColors):
             nextColors.remove(tempPoint.color)
-        if (len(colors) == 0):
+        if (len(nextColors) == 0):
+            pdb.set_trace()
             return -1
+        if point in visited:
+            continue
         unvisited.append(point)
+
+    print nextColors
+    print unvisited
+    print visited
+    print currNode.point,
+    print currNode.color
 
     for color in nextColors:
         currNode.color = color
         tree[str(curr)] = currNode
 
         for point in unvisited:
-            visited.add(point)
             if (_ColorMap(currMap, point, tree, visited, colors) == -1):
-                visited.remove(point)
-                break
-            visited.remove(point)
+                continue
 
     currNode.color = origColor
-    tree[point] = currNode
+    tree[str(curr)] = currNode
+    visited.remove(curr)
 
     return 0
 
