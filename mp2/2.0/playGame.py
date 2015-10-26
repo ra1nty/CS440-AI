@@ -54,7 +54,7 @@ def parseUserInput(move):
   return ret;
 
 def main():
-  b = board("./game_boards/Westerplatte.txt");
+  b = board("./game_boards/Keren.txt");
   p1 = MinimaxPlayer(2);
   g = Game(b);
   g.runGame(p1);

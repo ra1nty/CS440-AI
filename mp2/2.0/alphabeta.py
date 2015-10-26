@@ -3,20 +3,22 @@ from board import board
 from node import stateNode
 from decimal import Decimal
 
-
+# define BLUE as Maximizing player
+# define GREEN as minimizing player
 class AlphaBeta:
-  BLUE = 1
-  GREEN = 2
-  color = 0
-  Nodes = 0
-  moves = 0
+  BLUE = 1; # MAX, starts first
+  GREEN = 2; # MIN starts second
+  color = 0;
+  Nodes = 0;
+  moves = 0;
 
   def __init__(self, color):
     self.color = color;
 
+
   def generateMove(self, curGame):
-    self.moves += 1
-    move = self.alphabeta(curGame, 5, self.color,0,Decimal('-Infinity'),Decimal('Infinity'));
+    self.moves += 1;
+    move = self.alphabeta(curGame,5, self.color, Decimal('-Infinity'), Decimal('-Infinity'));
     ret =  list();
     ret.append(move[2]);
     ret.append(move[0]);
@@ -29,9 +31,7 @@ class AlphaBeta:
   def evalFn(self, board):
     status = board.getStatus();
     maxScore = status[1] + status[2];
-
-    ret = float((status[1] - status[2])/maxScore);
-    #print ret;
+    ret = float(status[1])/maxScore - float(status[2])/maxScore;
     return ret;
 
 
@@ -46,9 +46,9 @@ class AlphaBeta:
   # index 3: corresponding score for that move
   #   0: commando Para Drop
   #   1: M1 Death Blitz
-  def alphabeta(self, board, depth, color, index, alpha, beta):
+  def alphabeta(self, board, depth, color, alpha, beta):
     self.Nodes = self.Nodes + 1;
-    #print self.num;
+
     # initialize variables
     bestScore = 0;
     currentScore = 0;
@@ -56,109 +56,118 @@ class AlphaBeta:
     alpha = alpha
     beta = beta
     if color == self.BLUE:
-      bestScore = -1
-      opColor = self.GREEN
-
+      bestScore = -1;
+      opColor = self.GREEN;
     else:
-      bestScore = 1
-      opColor = self.BLUE
+      bestScore = 1;
+      opColor = self.BLUE;
 
-    bestX = -1
-    bestY = -1
-    bestMove = -1
-    invaded = list()
+    bestX = -1;
+    bestY = -1;
+    bestMove = -1;
+    invaded = list();
 
-    #check status
-    Commando = board.getCommandoPoints()
-    M1 = board.getM1Points(color)
-    status = board.getStatus()
+    # get all possible moves
+    possibleCommando = board.getCommandoPoints();
+    possibleM1 = board.getM1Points(color);
+    status = board.getStatus();
+    # Game has reached terminal state
+    # Base case 1
     if status[0] == 1:
       # Blue Wins
       if status[1] > status[2]:
-        bestScore = 1
+        bestScore = 1;
       # Blue Loses
       elif status[1] < status[2]:
-        bestScore = -1
+        bestScore = -1;
       # Draw
       else:
-        bestScore = 0
-
-    # get all possible moves
-
-
-    # Game has reached terminal state
-    # Base case 1
-
+        bestScore = 0;
     # Stopped expansion on a non terminal state
     # Use evaluation function
     # Base case 2
     elif depth == 0:
-      bestScore = self.evalFn(board)
+      bestScore = self.evalFn(board);
     # Not at base case, recursive call to minimax
     else:
-      # looping through commando
-      for commandoMove in Commando:
-        board.commandoParaDrop(color, commandoMove[0], commandoMove[1])
-        result = self.alphabeta(board, depth - 1, opColor, index, alpha, beta)
-        currScore = result[3]
-        # MAX PLAYER
+      # Find best commandoPara move
+      for commandoMove in possibleCommando:
+        board.commandoParaDrop(color, commandoMove[0], commandoMove[1]);
+        result = self.alphabeta(board, depth - 1, opColor, alpha, beta);
+        currentScore = result[3];
+        # player is maximizer
         if color == self.BLUE:
-          if currScore > alpha:
-            alpha = currScore
-            bestScore = currScore
-            bestX = commandoMove[0]
-            bestY = commandoMove[1]
-            bestMove = 0
+          if currentScore >= alpha:
+            alpha = currentScore
+            bestScore = currentScore;
+            bestX = commandoMove[0];
+            bestY = commandoMove[1];
+            bestMove = 0;
         # player is minimizer
         else:
-          if currScore < beta:
-            beta = currScore
-            bestScore = currScore
-            bestX = commandoMove[0]
-            bestY = commandoMove[1]
-            bestMove = 0
+          if currentScore <= beta:
+            beta = currentScore
+            bestScore = currentScore;
+            bestX = commandoMove[0];
+            bestY = commandoMove[1];
+            bestMove = 0;
         board.occupant[commandoMove[1]][commandoMove[0]] = 0
         if alpha >= beta:
-            break
-
+          break
       # find best possible M1blitz move
-      for m1Move in M1:
-        invades = board.m1DeathBlitz(color, m1Move[0], m1Move[1], invaded)
+      for m1Move in possibleM1:
+        invades = board.m1DeathBlitz(color, m1Move[0], m1Move[1], invaded);
         # only consider M1 if its effect is different from commando
         if invades is True:
-          result = self.alphabeta(board, depth - 1, opColor, index, alpha, beta)
-          currScore = result[3]
+          result = self.alphabeta(board, depth - 1, opColor, alpha, beta);
+          currentScore = result[3];
           # player is maximizer
           if color == self.BLUE:
-            if currScore > alpha:
-              alpha = currScore
-              bestScore = currScore
-              bestX = m1Move[0]
-              bestY = m1Move[1]
-              bestMove = 1
+            if currentScore >= alpha:
+              alpha = currentScore
+              bestScore = currentScore;
+              bestX = m1Move[0];
+              bestY = m1Move[1];
+              bestMove = 1;
           # player is minimizer
           else:
-            if currScore < beta:
-              beta = currScore
-              bestScore = currScore
-              bestX = m1Move[0]
-              bestY = m1Move[1]
-              bestMove = 1
+            if currentScore <= beta:
+              beta = currentScore
+              bestScore = currentScore;
+              bestX = m1Move[0];
+              bestY = m1Move[1];
+              bestMove = 1;
+
           board.occupant[m1Move[1]][m1Move[0]] = 0
           for invadeCoord in invaded:
             board.occupant[invadeCoord[1]][invadeCoord[0]] = opColor;
-        if alpha >= beta:
-          break
+          if alpha >= beta:
+            break
+
 
 
     # populate return array
-    ret = list()
-    ret.append(bestX) # index 0
-    ret.append(bestY) # index 1
-    ret.append(bestMove) # index 2
-    ret.append(bestScore) # index 3
-    #print depth;
-    #print ret;
+    ret = list();
+    ret.append(bestX); # index 0
+    ret.append(bestY); # index 1
+    ret.append(bestMove); # index 2
+    ret.append(bestScore); # index 3
 
     return ret;
 
+
+
+
+
+
+#def main():
+  #p = MinimaxPlayer(1)
+  #b = board("./game_boards/Keren.txt")
+  #b.printBoard();
+  #b.m1DeathBlitz(1,3,5)
+  #points = b.getM1Points(1)
+  #p.minimax(b,4,1);
+
+
+
+#main();

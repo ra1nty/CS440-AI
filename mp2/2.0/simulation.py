@@ -3,7 +3,7 @@ from board import board
 from playerminimax import MinimaxPlayer
 import copy
 import time
-
+from alphabeta import AlphaBeta
 class Simulation:
   BLUE = 0;
   GREEN = 0;
@@ -23,8 +23,8 @@ class Simulation:
         move1 = maxPlayer.generateMove(temp);
         
         self.board.makeMove(move1);
-        #print "player 1 move"
-        #print move1;
+        print "player 1 move"
+        print move1;
 
         temp = board(None);
         
@@ -35,13 +35,14 @@ class Simulation:
           self.board.makeMove(move2);
         else:
           break;
-        #print "player 2 move"
-        #print move2;
+        print "player 2 move"
+        print move2;
 
         status = self.board.getStatus();
-        #self.board.printBoard();
+        self.board.printBoard();
         #print;
         #time.sleep(1)
+      print;
       self.board.printBoard();
 
       # Print Scores
@@ -121,7 +122,7 @@ def main():
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
-  s.run(p1,p2, False);
+  #s.run(p1,p2, False);
   print "Player 1 expanded Nodes: ", p1.Nodes;  
   print "Player 1 Moves: ", p1.moves;  
 
@@ -134,7 +135,7 @@ def main():
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
-  s.run(p1,p2, False);
+  #s.run(p1,p2, False);
   print "Player 1 expanded Nodes: ", p1.Nodes;  
   print "Player 1 Moves: ", p1.moves;  
 
@@ -151,7 +152,7 @@ def main():
   p2 = MinimaxPlayer(2);
 
   s = Simulation(b);
-  s.run(p1,p2, False);
+  #s.run(p1,p2, False);
   
   print "Player 1 expanded Nodes: ", p1.Nodes;  
   print "Player 1 Moves: ", p1.moves;  
@@ -165,12 +166,13 @@ def main():
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
-  s.run(p1,p2, False);
+ # s.run(p1,p2, False);
   print "Player 1 expanded Nodes: ", p1.Nodes;  
   print "Player 1 Moves: ", p1.moves;  
 
   print "Player 2 Expanded Nodes: ", p2.Nodes;
   print "Player 2 Moves: ", p2.moves;
+
 
 
 
