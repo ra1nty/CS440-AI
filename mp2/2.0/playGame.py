@@ -13,13 +13,16 @@ class Game:
 
   def runGame(self, AI):
     status = self.board.getStatus();
+    self.board.printBoard();
     while status[0] != 1:
-      self.board.printBoard();
+      
       move = input("Enter your move \n");
       parsedMove = parseUserInput(move);
       parsedMove.append(1);
 
       self.board.makeMove(parsedMove);
+      self.board.printBoard();
+      print;
       #print "player 1 move"
       #print move1;
 
@@ -32,7 +35,7 @@ class Game:
       self.board.makeMove(move2);
       #print "player 2 move"
       #print move2;
-
+      print move2;
       status = self.board.getStatus();
       self.board.printBoard();
       print;
