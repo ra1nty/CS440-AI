@@ -2,7 +2,6 @@ import sys
 import pdb
 import os
 import copy
-from random import randint
 
 
 class board:
@@ -11,6 +10,7 @@ class board:
   BLUE = 1;
   GREEN = 2;
   BOARD_SIZE = 6;
+  MAX_NUM = 0;
 
   # board values for each square
   vals = [[0 for x in range(BOARD_SIZE)] for x in range(BOARD_SIZE)];
@@ -45,6 +45,7 @@ class board:
         for y in range (0, self.BOARD_SIZE):
           self.occupant[y][x] = 0;
           self.vals[y][x] = int(arrayBoard[y][x]);
+          self.MAX_NUM += self.vals[y][x];
 
 
   def copycctor(self, other):
@@ -106,8 +107,9 @@ class board:
   # inputs -- x, y : location on where to drop
   #           player =  green (2) or blue (1) 
   # outputs -- whether or not it invades opposing piece
-  def m1DeathBlitz(self, player, x, y):
+  def m1DeathBlitz(self, player, x, y, invaded):
     ret = False;
+    invadedCoord = list();
     opposingPlayer = 0;
     if player == self.GREEN:
       opposingPlayer = self.BLUE;
@@ -121,21 +123,37 @@ class board:
     if x + 1 < self.BOARD_SIZE:
       if self.occupant[y][x + 1] == opposingPlayer:
         self.occupant[y][x + 1] = player;
+        invadedCoord.append(x + 1);
+        invadedCoord.append(y);
+        invaded.append(invadedCoord);
+        invadedCoord = list();
         ret =  True;
     # left 
     if x - 1 >= 0:
       if self.occupant[y][x - 1] == opposingPlayer:
         self.occupant[y][x - 1] = player;
+        invadedCoord.append(x - 1);
+        invadedCoord.append(y);
+        invaded.append(invadedCoord);
+        invadedCoord = list();
         ret = True;
     # up 
     if y + 1 < self.BOARD_SIZE:
       if self.occupant[y + 1][x] == opposingPlayer:
         self.occupant[y + 1][x] = player;
+        invadedCoord.append(x);
+        invadedCoord.append(y + 1);
+        invaded.append(invadedCoord);
+        invadedCoord = list();
         ret = True;
     # down
     if y - 1 >= 0:
       if self.occupant[y - 1][x] == opposingPlayer:
         self.occupant[y - 1][x] = player;
+        invadedCoord.append(x);
+        invadedCoord.append(y - 1);
+        invaded.append(invadedCoord);
+        invadedCoord = list();
         ret = True;
     return ret;
 
@@ -146,13 +164,16 @@ class board:
   #   index 0: whether or not game is over
   #   index 1: blue score
   #   index 2: green score
+  #   index 3: total score of board
   def getStatus(self):
     game_over = 1;
     blue_score = 0;
     green_score = 0;
+    maxScore = 0;
     ret = [];
     for x in range(0, self.BOARD_SIZE):
       for y in range (0, self.BOARD_SIZE):
+        maxScore += self.vals[y][x];
         if self.occupant[y][x] == self.BLUE:
           blue_score += self.vals[y][x];
         elif self.occupant[y][x] ==  self.GREEN:
@@ -162,6 +183,7 @@ class board:
     ret.append(game_over);
     ret.append(blue_score);
     ret.append(green_score);
+    ret.append(maxScore);
 
     return ret
 
@@ -239,10 +261,11 @@ class board:
   #   index 3 : color of the player
   # outputs -- NONE
   def makeMove(self, move):
+    invaded = list();
     if move[0] == 0:
       self.commandoParaDrop(move[3], move[1], move[2]);
     elif move[0] == 1:
-      self.m1DeathBlitz(move[3], move[1], move[2]);
+      self.m1DeathBlitz(move[3], move[1], move[2], invaded);
 
     return self;
   def printOccupants(self):

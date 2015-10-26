@@ -15,7 +15,7 @@ class MinimaxPlayer:
   
 
   def generateMove(self, curGame):
-    move = self.minimax(curGame, 10, self.color,0);
+    move = self.minimax(curGame,3, self.color);
     ret =  list();
     ret.append(move[2]);
     ret.append(move[0]);
@@ -28,9 +28,7 @@ class MinimaxPlayer:
   def evalFn(self, board):
     status = board.getStatus();
     maxScore = status[1] + status[2];
-
     ret = float(status[1])/maxScore - float(status[2])/maxScore;
-    #print ret;
     return ret;
 
 
@@ -45,8 +43,8 @@ class MinimaxPlayer:
   # index 3: corresponding score for that move
   #   0: commando Para Drop
   #   1: M1 Death Blitz 
-  def minimax(self, board, depth, color, index):
-    self.num = self.num + 1;
+  def minimax(self, board, depth, color):
+    #self.num = self.num + 1;
     #print self.num;
     # initialize variables
     bestScore = 0;
@@ -62,6 +60,7 @@ class MinimaxPlayer:
     bestX = -1;
     bestY = -1;
     bestMove = -1;
+    invaded = list();
 
     # get all possible moves
     possibleCommando = board.getCommandoPoints();
@@ -89,7 +88,7 @@ class MinimaxPlayer:
       # Find best commandoPara move
       for commandoMove in possibleCommando:
         board.commandoParaDrop(color, commandoMove[0], commandoMove[1]);
-        result = self.minimax(board, depth - 1, opColor, index);
+        result = self.minimax(board, depth - 1, opColor);
         currentScore = result[3];
         # player is maximizer
         if color == self.BLUE:
@@ -106,29 +105,32 @@ class MinimaxPlayer:
             bestY = commandoMove[1];
             bestMove = 0;
         board.occupant[commandoMove[1]][commandoMove[0]] = 0
-
       # find best possible M1blitz move
       for m1Move in possibleM1:
-        invades = board.m1DeathBlitz(color, m1Move[0], m1Move[1]);
+        invades = board.m1DeathBlitz(color, m1Move[0], m1Move[1], invaded);
         # only consider M1 if its effect is different from commando
-        if invades is True: 
-          result = self.minimax(board, depth - 1, opColor, index);
+        if invades is True:
+          self.num = self.num + 1;
+          result = self.minimax(board, depth - 1, opColor);
           currentScore = result[3];
           # player is maximizer
           if color == self.BLUE:
-            if currentScore > bestScore:
+            if currentScore >= bestScore:
               bestScore = currentScore;
               bestX = m1Move[0];
               bestY = m1Move[1];
               bestMove = 1;
           # player is minimizer
           else:
-            if currentScore < bestScore:
+            if currentScore <= bestScore:
               bestScore = currentScore;
               bestX = m1Move[0];
               bestY = m1Move[1];
               bestMove = 1;
+
           board.occupant[m1Move[1]][m1Move[0]] = 0
+          for invadeCoord in invaded:
+            board.occupant[invadeCoord[1]][invadeCoord[0]] = opColor;
 
 
 
@@ -138,8 +140,6 @@ class MinimaxPlayer:
     ret.append(bestY); # index 1
     ret.append(bestMove); # index 2
     ret.append(bestScore); # index 3
-    #print depth;
-    #print ret;
 
     return ret;
 

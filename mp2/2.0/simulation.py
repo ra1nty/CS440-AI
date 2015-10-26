@@ -13,8 +13,6 @@ class Simulation:
     self.board = board;
 
 
-
-
   def run(self, maxPlayer, minPlayer, isTest):
     status = self.board.getStatus();
     if not isTest:
@@ -31,16 +29,18 @@ class Simulation:
         temp = board(None);
         
         self.board.copycctor(temp);
-
-        move2 = minPlayer.generateMove(temp);
-        
-        self.board.makeMove(move2);
+        status = self.board.getStatus();
+        if status[0] != 1:
+          move2 = minPlayer.generateMove(temp);
+          self.board.makeMove(move2);
+        else:
+          break;
         #print "player 2 move"
         #print move2;
 
         status = self.board.getStatus();
-      #  self.board.printBoard();
-        #sprint;
+        #self.board.printBoard();
+        #print;
         #time.sleep(1)
       self.board.printBoard();
 
@@ -59,19 +59,57 @@ class Simulation:
       print move1;
       self.board.printOccupants();
 
+  def humanVsAI(self, AI):
+    while status[0] != 1:
 
+      self.board.makeMove(move1);
+      #print "player 1 move"
+      #print move1;
+
+      temp = board(None);
+      
+      self.board.copycctor(temp);
+
+      move2 = minPlayer.generateMove(temp);
+      
+      self.board.makeMove(move2);
+      #print "player 2 move"
+      #print move2;
+
+      status = self.board.getStatus();
+    #  self.board.printBoard();
+      #sprint;
+      #time.sleep(1)
+    self.board.printBoard();
+
+    # Print Scores
+    print self.board.getStatus();
+
+def parseUserInput(move):
+  parsedMove = str(move);
+  parsedMove = parsedMove.replace("(", "");
+  parsedMove = parsedMove.replace(")", "");
+  temp = parsedMove.split(",");
+  ret = list();
+  for num in temp:
+    ret.append(int(num));
+
+
+  print ret;
 
 
 
 
 def main():
-
   print "Keren Minimax vs Minimax"
   b = board("./game_boards/Keren.txt");
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
+
   s.run(p1,p2, False);
+
+  print;
 
   print "Narvik Minimax vs Minimax"
   b = board("./game_boards/Narvik.txt");
@@ -80,13 +118,16 @@ def main():
   s = Simulation(b);
   s.run(p1,p2, False);
 
-
+  print;
   print "Sevastopol Minimax vs Minimax"
   b = board("./game_boards/Sevastopol.txt");
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
   s.run(p1,p2, False);
+
+  print;
+
 
   print "Smolensk Minimax vs Minimax"
   b = board("./game_boards/Smolensk.txt");
@@ -99,13 +140,16 @@ def main():
   
   print p1.num;  
   print p2.num;
-  
+  print;
+
   print "Westerplatte Minimax vs Minimax"
   b = board("./game_boards/Westerplatte.txt");
   p1 = MinimaxPlayer(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
   s.run(p1,p2, False);
+
+
 
 
 main()
