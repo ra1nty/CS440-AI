@@ -18,7 +18,7 @@ class AlphaBeta:
 
   def generateMove(self, curGame):
     self.moves += 1;
-    move = self.alphabeta(curGame,5, self.color, Decimal('-Infinity'), Decimal('-Infinity'));
+    move = self.alphabeta(curGame,5, self.color, Decimal('-Infinity'), Decimal('Infinity'));
     ret =  list();
     ret.append(move[2]);
     ret.append(move[0]);

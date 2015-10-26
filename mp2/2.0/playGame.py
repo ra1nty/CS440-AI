@@ -20,6 +20,9 @@ class Game:
       parsedMove = parseUserInput(move);
       parsedMove.append(1);
 
+      if not isValidMove(parsedMove, self.board):
+        print "Please enter a valid move";
+        continue;
       self.board.makeMove(parsedMove);
       self.board.printBoard();
       print;
@@ -52,9 +55,27 @@ def parseUserInput(move):
   ret = list();
   for num in temp:
     ret.append(int(num));
-
-
   return ret;
+
+def isValidMove(move, board):
+  if len(move) != 4:
+    print "invalid number of arguements";
+    return False;
+  elif move[0] != 0 and move [0] != 1:
+    print "invalid move type (index 0)";
+    return False;
+  elif move[1] >= 6 or move[2] >= 6:
+    print "coordinates out of bounds";
+    return False;
+  elif move[1] < 0 or move[2] < 0:
+    print "coordinates out of bounds";
+    return False;
+  elif board.occupant[move[2]][move[1]] != 0:
+    print "space is occupied";
+    return False;
+  else:
+    return True;
+
 
 def main():
   b = board("./game_boards/Keren.txt");
