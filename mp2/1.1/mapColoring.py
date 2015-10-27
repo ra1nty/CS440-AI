@@ -293,6 +293,8 @@ class colorNode:
         self.edges = edges
         self.visitedNum = 0
 
+FORWARD_CHECKING = 1
+
 def _ColorMap(currMap, curr, tree, visited, colors):
     remaining = False
     visited.add(curr)
@@ -303,7 +305,7 @@ def _ColorMap(currMap, curr, tree, visited, colors):
             break
 
     if remaining == False:
-        return
+        return 1
 
     edges = currMap.getEdges(curr)
 
@@ -328,8 +330,31 @@ def _ColorMap(currMap, curr, tree, visited, colors):
         tree[str(curr)] = currNode
 
         for point in unvisited:
-            if (_ColorMap(currMap, point, tree, visited, colors) == -1):
+            if FORWARD_CHECKING == 1:
+                forwardEdges = currMap.getEdges(point)
+                remainingColors = list(colors)
+                remainingColors.remove(color)
+                skipColor = False
+                for forwardPoint in forwardEdges:
+                    if forwardPoint == curr:
+                        continue
+                    if tree[str(forwardPoint)].color in remainingColors:
+                        remainingColors.remove(tree[str(forwardPoint)].color)
+                    if forwardPoint in visited:
+                        continue
+                    if len(remainingColors) == 0:
+                        skipColor = True
+                        break
+                if skipColor == True:
+                    break
+
+            ret = _ColorMap(currMap, point, tree, visited, colors)
+            if (ret == -1):
                 continue
+            elif (ret == 1):
+                return ret
+
+
 
     currNode.color = origColor
     tree[str(curr)] = currNode
