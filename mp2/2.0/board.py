@@ -66,6 +66,17 @@ class board:
       print temp;
       temp = "";
 
+  def printBoardforGame(self):
+    temp = ""
+    for y in range(0, self.BOARD_SIZE):
+      for x in range(0, self.BOARD_SIZE):
+        if(self.vals[y][x] < 10):
+          temp = temp + str(self.vals[y][x]) +"(" + str(self.occupant[y][x]) + ")"  + "         ";
+        else:
+          temp = temp + str(self.vals[y][x]) + "(" + str(self.occupant[y][x]) + ")" + "        ";
+      print temp;
+      print;
+      temp = "";
   # get value at a certain point on the board
   # inputs -- x,y coordinates of the desired value
   # outputs -- value at that coordinate 

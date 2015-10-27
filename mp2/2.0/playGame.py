@@ -13,7 +13,7 @@ class Game:
 
   def runGame(self, AI):
     status = self.board.getStatus();
-    self.board.printBoard();
+    self.board.printBoardforGame();
     while status[0] != 1:
       
       move = input("Enter your move \n");
@@ -24,7 +24,7 @@ class Game:
         print "Please enter a valid move";
         continue;
       self.board.makeMove(parsedMove);
-      self.board.printBoard();
+      self.board.printBoardforGame();
       print;
       #print "player 1 move"
       #print move1;
@@ -40,9 +40,9 @@ class Game:
       #print move2;
       print move2;
       status = self.board.getStatus();
-      self.board.printBoard();
+      self.board.printBoardforGame();
       print;
-    self.board.printBoard();
+    self.board.printBoardforGame();
 
     # Print Scores
     print self.board.getStatus();
