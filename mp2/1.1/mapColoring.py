@@ -8,6 +8,7 @@ import pprint
 import png
 import Image
 from time import sleep
+import time
 
 def abs(num):
     if num < 0:
@@ -17,7 +18,7 @@ def abs(num):
 
 class Map:
 
-    def __init__(self, size):
+    def __init__(self, size, n):
         self.__map = list()
 
         for y in range(0, size):
@@ -31,7 +32,7 @@ class Map:
         self.__size = size
         self.__edges = []
         self.__first = (-1, -1)
-        self.generate()
+        self.generate(n)
         self.__edgeList = self.makeEdgeList()
 
     def getInitialPoint(self):
@@ -40,9 +41,9 @@ class Map:
     def getEdges(self, point):
         return self.__edgeList[str(point)]
 
-    def generate(self):
+    def generate(self, _n):
         self.__first = first = self.__getPoint()
-        self.n = n = 15
+        self.n = n = _n
         vertices = Set()
 
         while (n):
@@ -272,7 +273,16 @@ def ColorMap(randomMap):
     for point, edges in edgeList.iteritems():
         nodeTree[point] = colorNode('N', point, edges)
 
+    avgEdges = 0
+    for point, edges in edgeList.iteritems():
+        avgEdges += len(edges)
+
+
     _ColorMap(currMap=randomMap, curr=initialPoint, tree=nodeTree, visited=visited, colors=colors)
+
+    avgEdges /= randomMap.n
+    nodeTree['avgEdges'] = avgEdges
+    return nodeTree
     pass
 
 class colorNode:
@@ -281,6 +291,7 @@ class colorNode:
         self.color = color
         self.point = point
         self.edges = edges
+        self.visitedNum = 0
 
 def _ColorMap(currMap, curr, tree, visited, colors):
     remaining = False
@@ -292,7 +303,6 @@ def _ColorMap(currMap, curr, tree, visited, colors):
             break
 
     if remaining == False:
-        pdb.set_trace()
         return
 
     edges = currMap.getEdges(curr)
@@ -301,23 +311,17 @@ def _ColorMap(currMap, curr, tree, visited, colors):
     nextColors = list(colors)
     currNode = tree[str(curr)]
     origColor = currNode.color
+    currNode.visitedNum += 1
 
     for point in edges:
         tempPoint = tree[str(point)]
         if (tempPoint.color in nextColors):
             nextColors.remove(tempPoint.color)
         if (len(nextColors) == 0):
-            pdb.set_trace()
             return -1
         if point in visited:
             continue
         unvisited.append(point)
-
-    print nextColors
-    print unvisited
-    print visited
-    print currNode.point,
-    print currNode.color
 
     for color in nextColors:
         currNode.color = color
@@ -338,4 +342,28 @@ if __name__ == "__main__":
     # for i in range(0, 10):
     #   Map(8).printJSON(name + str(i) + '.json')
 
-    ColorMap(Map(8))
+
+    timeTrace = dict()
+    treeTrace = dict()
+    for i in range(2, 14):
+        initial = time.time()
+        ret = ColorMap(Map(i, i))
+        end = time.time()
+        timeTrace[i] = end - initial
+        treeTrace[i] = ret
+
+    for i in range(2, 14):
+        print "______________________"
+        print "For " + str(i) + " n"
+        print timeTrace[i]
+        avgVisited = 0
+        for point, node in treeTrace[i].iteritems():
+            if point == 'avgEdges':
+                continue
+            print point,
+            print node.visitedNum
+            avgVisited += node.visitedNum
+
+        print avgVisited/i
+        print treeTrace[i]['avgEdges']
+
