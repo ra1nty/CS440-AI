@@ -1,0 +1,93 @@
+Keren Minimax vs Minimax
+player 1 move
+[0, 5, 5, 1]
+player 2 move
+[0, 5, 4, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(2)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(1)  
+player 1 move
+[0, 5, 3, 1]
+player 2 move
+[0, 4, 3, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(2)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(1)  
+player 1 move
+[0, 4, 4, 1]
+player 2 move
+[0, 3, 4, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(2)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(1)  
+player 1 move
+[0, 4, 2, 1]
+player 2 move
+[0, 3, 2, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(2)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(1)  
+player 1 move
+[0, 3, 5, 1]
+player 2 move
+[0, 2, 5, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(2)  
+1(0)  1(0)  1(2)  1(1)  1(0)  1(1)  
+player 1 move
+[0, 3, 1, 1]
+player 2 move
+[0, 2, 2, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(0)  1(0)  1(0)  1(1)  1(0)  1(0)  
+1(0)  1(0)  1(2)  1(2)  1(1)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(2)  
+1(0)  1(0)  1(2)  1(1)  1(0)  1(1)  
+player 1 move
+[1, 2, 1, 1]
+player 2 move
+[0, 0, 1, 2]
+1(0)  1(0)  1(0)  1(0)  1(0)  1(0)  
+1(2)  1(0)  1(1)  1(1)  1(0)  1(0)  
+1(0)  1(0)  1(1)  1(2)  1(1)  1(0)  
+1(0)  1(0)  1(0)  1(0)  1(2)  1(1)  
+1(0)  1(0)  1(0)  1(2)  1(1)  1(2)  
+1(0)  1(0)  1(2)  1(1)  1(0)  1(1)  
+Traceback (most recent call last):
+  File "simulation.py", line 180, in <module>
+    main()
+  File "simulation.py", line 111, in main
+    s.run(p1,p2, False);
+  File "simulation.py", line 23, in run
+    move1 = maxPlayer.generateMove(temp);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 20, in generateMove
+    move = self.minimax(curGame,3, self.color);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 93, in minimax
+    result = self.minimax(board, depth - 1, opColor);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 115, in minimax
+    result = self.minimax(board, depth - 1, opColor);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 115, in minimax
+    result = self.minimax(board, depth - 1, opColor);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 87, in minimax
+    bestScore = self.evalFn(board);
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/playerminimax.py", line 31, in evalFn
+    status = board.getStatus();
+  File "/Users/lisahao/Desktop/UIUC/Junior/cs440-AI/mp2/2.0/board.py", line 175, in getStatus
+    for y in range (0, self.BOARD_SIZE):
+KeyboardInterrupt
