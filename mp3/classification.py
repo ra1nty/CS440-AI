@@ -103,10 +103,10 @@ class Classifier:
                         PixelP[i] = posterior[i]/(self.classNum[idx] + 0.0)
 
                     # P(x | e) maxSetOf P(e | x) * P(x)
-                    testing[idx] = math.log(Pclass, 2)
+                    testing[idx] = Pclass
 
                     for i in range(0, self.__imageN * self.__imageN):
-                        testing[idx] += math.log(PixelP[i], 2)
+                        testing[idx] += PixelP[i]
 
                     pdb.set_trace()
 
