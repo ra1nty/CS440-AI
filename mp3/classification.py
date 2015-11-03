@@ -75,8 +75,10 @@ class Classifier:
 
         return totalPixels
 
+    constant = 1
+
     def smoothArr(self, arr, classNum):
-        constant = 1
+        constant = self.constant
 
         for i in range(0, self.__imageN * self.__imageN):
             arr[i] += constant
@@ -87,7 +89,7 @@ class Classifier:
         return arr
 
     def smoothing(self):
-        constant = 1
+        constant = self.constant
         self.totalImages = 0
 
         for idx in self.likelyhoods.keys():
@@ -170,6 +172,7 @@ class Classifier:
                 maximum = -999999999999999
                 idx = 0
 
+
                 for i in range(0, len(testing)):
                     if testing[i] > maximum:
                         maximum = testing[i]
@@ -188,20 +191,23 @@ class Classifier:
                 (Not sure if we should do this but this brought the accuracy up to around 70%)
                 """
 
-                representation = self.smoothArr(representation, actual)
-
                 for i in range(0, self.__imageN * self.__imageN):
                     self.likelyhoods[actual][i] += representation[i]
 
                 self.classNum[actual] += 1
                 self.totalImages += 1
-                total += 1
 
                 representation = [0] * self.__imageN * self.__imageN
+                total += 1
 
         # The accuracy of the predictions
         print "Accuracy " + str(accuracy/(total + 0.0))
 
+        print "  ",
+        for i in range(0, len(self.confusionMatrix)):
+            print i,
+            print "  ",
+        print ""
         for i in range(0, len(self.confusionMatrix)):
             for j in range(0, len(self.confusionMatrix[i])):
                 self.confusionMatrix[i][j] /= float(classClassified[i])
@@ -214,7 +220,10 @@ if __name__ == "__main__":
     c.train('./digitdata/trainingimages', './digitdata/traininglabels')
     cMatrix = c.test('./digitdata/testimages', './digitdata/testlabels')
 
+    i = 0
     for row in cMatrix:
+        print i,
         print row
+        i += 1
 
 
