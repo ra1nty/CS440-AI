@@ -19,6 +19,17 @@ class Classifier:
             self.likelyhoods[i] = temp
             self.classNum[i] = 0
 
+    """
+    def train(self, trainingImages, trainingLabels)
+
+    inputs: trainingImages - {String} pathname to the training image set
+            trainingLabels - {String} pathname to the training image labels
+
+    outputs: None
+    returns: None
+    side effects: creates a new dictionary of the likelyhoods of each class (the number) and the
+                  number of times the pixel appears (likelyhood)
+    """
 
     def train(self, trainingImages, trainingLabels):
         labels = open(trainingLabels, 'r').read()
@@ -85,10 +96,25 @@ class Classifier:
             self.classNum[idx] += constant * self.classNum[idx]
             self.totalImages += self.classNum[idx]
 
+    """
+    def test(self, testImages, testLabels)
+
+    input: testImages - {String} path to the testimages
+           testLabels - {String} path to the testlabels
+
+    outputs: Accuracy of the learned data
+    returns: Confusion matrix - {List[List * 10]} When they don't match up the percentage of the actual vs predicted
+    side effects: Increases the likelyhoods as it learns from the different test images
+    """
+
     def test(self, testImages, testLabels):
         images = open(testImages, 'r')
         labels = open(testLabels, 'r').read().split('\n')
         self.confusionMatrix = list()
+
+        """
+        Create the confusion matrix as an NxN array
+        """
 
         for i in range(0, len(self.likelyhoods.keys())):
             temp = [0] * len(self.likelyhoods.keys())
@@ -100,11 +126,17 @@ class Classifier:
         total = 0
         classClassified = [0] * self.__imageN
 
+        """
+        Go through the image file line by line
+        """
         for line in images:
 
+            # if the line is not the end of an image
             for i in range(0, self.__imageN):
                 if not line[i] == ' ':
                     representation[counter * self.__imageN + i] += 1
+
+            # When counter is equal to the size of an image we can try to classify it
             counter += 1
 
             if counter == self.__imageN:
@@ -112,10 +144,12 @@ class Classifier:
 
                 testing = [0] * len(self.likelyhoods.keys())
 
+                # Go through the learned likelyhoods and create the naive bayes probability
                 for idx, posterior in self.likelyhoods.iteritems():
                     Pclass = self.classNum[idx] / (self.totalImages + 0.0)
                     PixelP = [0] * self.__imageN * self.__imageN
 
+                    # For each pixel calculate the probability
                     for i in range(0, self.__imageN * self.__imageN):
                         if representation[i] == 1:
                             PixelP[i] = posterior[i]/(self.classNum[idx] + 0.0)
@@ -129,6 +163,10 @@ class Classifier:
                         testing[idx] += math.log(PixelP[i], 2)
 
 
+                """
+                Find the maximum value from all the trials and that is the index that we are gonna classify
+                This number as
+                """
                 maximum = -999999999999999
                 idx = 0
 
@@ -144,6 +182,12 @@ class Classifier:
                 else:
                     self.confusionMatrix[actual][idx] += 1
 
+
+                """
+                Use the new data and learn from it to improve the future results
+                (Not sure if we should do this but this brought the accuracy up to around 70%)
+                """
+
                 representation = self.smoothArr(representation, actual)
 
                 for i in range(0, self.__imageN * self.__imageN):
@@ -155,11 +199,14 @@ class Classifier:
 
                 representation = [0] * self.__imageN * self.__imageN
 
+        # The accuracy of the predictions
         print "Accuracy " + str(accuracy/(total + 0.0))
+
         for i in range(0, len(self.confusionMatrix)):
             for j in range(0, len(self.confusionMatrix[i])):
                 self.confusionMatrix[i][j] /= float(classClassified[i])
                 self.confusionMatrix[i][j] = round(self.confusionMatrix[i][j], 2)
+
         return self.confusionMatrix
 
 if __name__ == "__main__":
