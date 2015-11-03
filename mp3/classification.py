@@ -64,11 +64,14 @@ class Classifier:
 
         return totalPixels
 
-    def smoothArr(self, arr):
+    def smoothArr(self, arr, classNum):
         constant = 1
 
         for i in range(0, self.__imageN * self.__imageN):
             arr[i] += constant
+
+        self.classNum[classNum] += constant
+        self.totalImages += constant
 
         return arr
 
@@ -85,13 +88,17 @@ class Classifier:
     def test(self, testImages, testLabels):
         images = open(testImages, 'r')
         labels = open(testLabels, 'r').read().split('\n')
+        self.confusionMatrix = list()
 
-        self.confusionMatrix = [[0] * len(self.likelyhoods.keys())] * len(self.likelyhoods.keys())
+        for i in range(0, len(self.likelyhoods.keys())):
+            temp = [0] * len(self.likelyhoods.keys())
+            self.confusionMatrix.append(temp)
 
         counter = 0
         representation = [0] * self.__imageN * self.__imageN
         accuracy = 0
         total = 0
+        classClassified = [0] * self.__imageN
 
         for line in images:
 
@@ -119,9 +126,8 @@ class Classifier:
                     testing[idx] = math.log(Pclass, 2)
 
                     for i in range(0, self.__imageN * self.__imageN):
-                        testing[idx] += math.log(PixelP[i])
+                        testing[idx] += math.log(PixelP[i], 2)
 
-                representation = self.smoothArr(representation)
 
                 maximum = -999999999999999
                 idx = 0
@@ -132,10 +138,13 @@ class Classifier:
                         idx = i
 
                 actual = int(labels.pop(0))
+                classClassified[actual] += 1
                 if idx == actual:
                     accuracy += 1
                 else:
-                    self.confusionMatrix[idx][actual] += 1
+                    self.confusionMatrix[actual][idx] += 1
+
+                representation = self.smoothArr(representation, actual)
 
                 for i in range(0, self.__imageN * self.__imageN):
                     self.likelyhoods[actual][i] += representation[i]
@@ -147,6 +156,10 @@ class Classifier:
                 representation = [0] * self.__imageN * self.__imageN
 
         print "Accuracy " + str(accuracy/(total + 0.0))
+        for i in range(0, len(self.confusionMatrix)):
+            for j in range(0, len(self.confusionMatrix[i])):
+                self.confusionMatrix[i][j] /= float(classClassified[i])
+                self.confusionMatrix[i][j] = round(self.confusionMatrix[i][j], 2)
         return self.confusionMatrix
 
 if __name__ == "__main__":
