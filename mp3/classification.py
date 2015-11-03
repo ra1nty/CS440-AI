@@ -64,6 +64,14 @@ class Classifier:
 
         return totalPixels
 
+    def smoothArr(self, arr):
+        constant = 1
+
+        for i in range(0, self.__imageN * self.__imageN):
+            arr[i] += constant
+
+        return arr
+
     def smoothing(self):
         constant = 1
         self.totalImages = 0
@@ -78,10 +86,12 @@ class Classifier:
         images = open(testImages, 'r')
         labels = open(testLabels, 'r').read().split('\n')
 
-        self.confusionMatrix = [0] * len(self.likelyhoods.keys()) * len(self.likelyhoods.keys())
+        self.confusionMatrix = [[0] * len(self.likelyhoods.keys())] * len(self.likelyhoods.keys())
 
         counter = 0
         representation = [0] * self.__imageN * self.__imageN
+        accuracy = 0
+        total = 0
 
         for line in images:
 
@@ -100,18 +110,51 @@ class Classifier:
                     PixelP = [0] * self.__imageN * self.__imageN
 
                     for i in range(0, self.__imageN * self.__imageN):
-                        PixelP[i] = posterior[i]/(self.classNum[idx] + 0.0)
+                        if representation[i] == 1:
+                            PixelP[i] = posterior[i]/(self.classNum[idx] + 0.0)
+                        else:
+                            PixelP[i] = (self.classNum[idx] - posterior[i])/(self.classNum[idx] + 0.0)
 
                     # P(x | e) maxSetOf P(e | x) * P(x)
-                    testing[idx] = Pclass
+                    testing[idx] = math.log(Pclass, 2)
 
                     for i in range(0, self.__imageN * self.__imageN):
-                        testing[idx] += PixelP[i]
+                        testing[idx] += math.log(PixelP[i])
 
-                    pdb.set_trace()
+                representation = self.smoothArr(representation)
+
+                maximum = -999999999999999
+                idx = 0
+
+                for i in range(0, len(testing)):
+                    if testing[i] > maximum:
+                        maximum = testing[i]
+                        idx = i
+
+                actual = int(labels.pop(0))
+                if idx == actual:
+                    accuracy += 1
+                else:
+                    self.confusionMatrix[idx][actual] += 1
+
+                for i in range(0, self.__imageN * self.__imageN):
+                    self.likelyhoods[actual][i] += representation[i]
+
+                self.classNum[actual] += 1
+                self.totalImages += 1
+                total += 1
+
+                representation = [0] * self.__imageN * self.__imageN
+
+        print "Accuracy " + str(accuracy/(total + 0.0))
+        return self.confusionMatrix
 
 if __name__ == "__main__":
     c = Classifier()
     c.train('./digitdata/trainingimages', './digitdata/traininglabels')
-    c.test('./digitdata/testimages', './digitdata/testlabels')
+    cMatrix = c.test('./digitdata/testimages', './digitdata/testlabels')
+
+    for row in cMatrix:
+        print row
+
 
