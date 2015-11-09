@@ -15,7 +15,7 @@ class Game:
     status = self.board.getStatus();
     self.board.printBoardforGame();
     while status[0] != 1:
-      
+      print status;
       move = input("Enter your move \n");
       parsedMove = parseUserInput(move);
       parsedMove.append(1);
