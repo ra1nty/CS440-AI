@@ -86,8 +86,11 @@ RGBAPixel getGradient(float val, float min, float max)
     unsigned char red = 0, green = 0, blue = 0;
 
     if (val < min + breakpoints) {
+
     } else if (val < min + (2*breakpoints)) {
+
     } else {
+
     }
 
     return RGBAPixel(red, green, blue);
@@ -121,7 +124,7 @@ vector<vector<float>> readLikelyhoods(string file)
     vector<vector<float>> likelyhoods;
 
     for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 28 * 28; j++) {
+        for (int j = 0; j < DIM * DIM; j++) {
             fscanf(f, "%f ", &temp);
             vec.push_back(temp);
         }

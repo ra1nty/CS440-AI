@@ -63,6 +63,12 @@ class Classifier:
         self.smoothing()
         self.totalPixels = self.countPixels()
 
+    def trainRelaxed(self, trainingImages, trainingLabels, n, m):
+        pass
+
+    def testRelaxed(self, trainingImages, trainingLables, n, m):
+        pass
+
     def countPixels(self):
         count = 0
         totalPixels = dict()
@@ -263,6 +269,9 @@ if __name__ == "__main__":
         print row
         i += 1
 
-    oddRatios = c.oddRatios(cMatrix)
-
+    # oddRatios = c.oddRatios(cMatrix)
+    n = 2
+    m = 2
+    c.trainRelaxed('./digitdata/trainingimages', './digitdata/traininglabels', n, m)
+    c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', n, m)
 
