@@ -39,6 +39,7 @@ class Classifier:
 
         counter = 0
         representation = [0] * self.__imageN * self.__imageN
+        self.totalImages = 0
 
         for line in images:
             for i in range(0, self.__imageN):
@@ -58,13 +59,126 @@ class Classifier:
 
                 # Reset the representation array
                 representation = [0] * self.__imageN * self.__imageN
+                self.totalImages += 1
 
         images.close()
         self.smoothing()
         self.totalPixels = self.countPixels()
 
-    def testRelaxed(self, trainingImages, trainingLables, n, m):
+    def retrain(self, trainingImages, trainingLabels):
+        self.likelyhoods = dict()
+        self.classNum = dict()
+
+        for i in range(0, 10):
+            temp = [0] * self.__imageN * self.__imageN
+            self.likelyhoods[i] = temp
+            self.classNum[i] = 0
+
+        self.train(trainingImages, trainingLabels)
+
+    def generateIndex(self, x, y):
+        return y * self.__imageN + x
+
+    def chainRule(self, jointProbabilities):
         pass
+
+    def testRelaxed(self, trainingImages, trainingLabels, n, m):
+        images = open(trainingImages, 'r')
+        labels = open(trainingLabels, 'r').read().split('\n')
+
+        counter = 0
+        representation = [0] * self.__imageN * self.__imageN
+        accuracy = 0
+        total = 0
+
+        for line in images:
+
+            for i in range(0, self.__imageN):
+                if not line[i] == ' ':
+                    representation[self.generateIndex(i, counter)] += 1
+
+            counter += 1
+
+            # End of the image, process this
+            if counter == self.__imageN:
+                featureSets = dict()
+
+                for idx, posterior in self.likelyhoods.iteritems():
+                    temp = list()
+                    lidx = 0
+
+                    for y in range(0, self.__imageN, m):
+                        for x in range(0, self.__imageN, n):
+
+                            jointProbabilities = list()
+                            for yi in range(0, m):
+                                for xi in range(0, n):
+                                    jointProbabilities.append(self.generateIndex(xi + x, yi + y))
+
+                            PFeature = ()
+                            for probability in jointProbabilities:
+                                PFeature = PFeature + (posterior[probability]/(0.0 + self.classNum[idx]),)
+
+                            temp.append(PFeature)
+
+                    featureSets[idx] = temp
+
+                temp = list()
+                for y in range(0, self.__imageN, m):
+                    for x in range(0, self.__imageN, n):
+
+                        jointProbabilities = list()
+                        for yi in range(0, m):
+                            for xi in range(0, n):
+                                jointProbabilities.append(self.generateIndex(xi + x, yi + y))
+
+                        PFeature = ()
+                        for probability in jointProbabilities:
+                            PFeature = PFeature + (representation[probability],)
+
+                        temp.append(PFeature)
+
+                MAP = dict()
+                for idx, features in featureSets.iteritems():
+                    probability = self.classNum[idx]/(self.totalImages + 0.0)
+
+                    for j in range(0, len(temp)):
+                        masterFeature = features[j]
+                        testFeature = temp[j]
+
+                        for i in range(0, len(masterFeature)):
+                            if testFeature[i] == 1:
+                                probability += math.log(masterFeature[i], 2)
+                            else:
+                                probability += math.log(1 - masterFeature[i], 2)
+
+                    MAP[idx] = probability
+
+                maximum = -9999999999999.9
+                finalIdx = idx
+
+                for idx, p in MAP.iteritems():
+                    if p > maximum:
+                        maximum = p
+                        finalIdx = idx
+
+                actual = int(labels.pop(0))
+
+                if actual == finalIdx:
+                    accuracy += 1
+
+                total += 1
+                counter = 0
+
+                for i in range(0, self.__imageN * self.__imageN):
+                    self.likelyhoods[actual][i] += representation[i]
+
+                self.classNum[actual] += 1
+                self.totalImages += 1
+
+                representation = [0] * self.__imageN * self.__imageN
+
+        print "%f accuracy" % ((accuracy/(total + 0.0)))
 
     def countPixels(self):
         count = 0
@@ -267,8 +381,9 @@ if __name__ == "__main__":
         i += 1
 
     # oddRatios = c.oddRatios(cMatrix)
+
     n = 2
     m = 2
-    c.trainRelaxed('./digitdata/trainingimages', './digitdata/traininglabels', n, m)
+    c.retrain('./digitdata/trainingimages', './digitdata/traininglabels')
     c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', n, m)
 
