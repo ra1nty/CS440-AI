@@ -63,9 +63,6 @@ class Classifier:
         self.smoothing()
         self.totalPixels = self.countPixels()
 
-    def trainRelaxed(self, trainingImages, trainingLabels, n, m):
-        pass
-
     def testRelaxed(self, trainingImages, trainingLables, n, m):
         pass
 
