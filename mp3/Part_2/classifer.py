@@ -1,3 +1,4 @@
+from math import log
 class classifier:
   wordDict = list();
   # estimation model: 
@@ -24,9 +25,6 @@ class classifier:
       self.wordDict = self.trainMultinomial(filename, parseType);
     else:
       self.wordDict = self.trainBernoulli(filename);
-
-    print self.wordDict;
-
 
     self.model = model;
 
@@ -100,6 +98,7 @@ class classifier:
     else:
       TYPE1 = '1';
       TYPE2 = '-1';
+    numDocs = 0;
 
     solutionList = list();
     classifyList = list();
@@ -119,26 +118,41 @@ class classifier:
         wordList.append(info[0]);
       probT1 = self.calculateMultiBayes(wordList,0);
       probT2 = self.calculateMultiBayes(wordList,1);
+      #print probT1;
+      #print probT2;
+      #print;
       if probT1 > probT2:
         classifyList.append(TYPE1);
       else:
         classifyList.append(TYPE2);
       del wordList[:];
 
+    idx = 0;
+    correct = 0;
+    for guess in classifyList:
+      if guess == solutionList[idx]:
+        correct += 1;
+      idx += 1; 
 
 
+    return float(correct) / idx;
 
-    return 0;
-
-  def calculateMultiBayes(self, wordList, type):
+  def calculateMultiBayes(self, wordList, docType):
+    ret = 1;
     for testWord in wordList:
-      self.wordDict[0].get(testWord,1);
+      numerator = self.wordDict[docType].get(testWord, 0);
+      numerator += 1;
+      if docType == 0:
+        denominator = self.vocab + self.type1Size;
+      else:
+        denominator = self.vocab + self.type2Size;
+      #print numerator;
+      #print denominator;
+      ret += log(float(numerator)/denominator);
+      #print ret;
 
 
-
-
-
-    return 0;
+    return float(ret);
 
 
 
@@ -149,6 +163,11 @@ class classifier:
 def main():
   c = classifier("sentiment/rt-train.txt", 1,1);
   accuracy = c.classifyMultinomial("sentiment/rt-test.txt",1);
+  print accuracy;
+  c = classifier("spam_detection/train_email.txt", 1,0);
+  accuracy = c.classifyMultinomial("spam_detection/test_email.txt",0);
+  print accuracy;
+
 
 
 main();
