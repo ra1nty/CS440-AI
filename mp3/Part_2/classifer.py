@@ -4,6 +4,13 @@ class classifier:
   #   1 -- Multinomial Bayes
   #   2 -- Bernoulli Bayes
   model = 0;
+  # total number of words in each doctype
+  type1Size = 0;
+  type2Size = 0;
+  # vocab of words for Laplacian Smoothing 
+  vocab = 0;
+  #P(class) will always be 0.5 in this case since 
+  PCLASS = 0.5;
 
 
   # Constructor for classfier
@@ -12,16 +19,17 @@ class classifier:
   #           type: spam(0) or movie(1)
   # OUTPUTS  -- NONE
 
-  def __init__(self, filename, model, type):
+  def __init__(self, filename, model, parseType):
     if model == 1:
-      self.wordDict = self.trainMultinomial(filename,1);
-      print self.wordDict[0];
-      print;
-      print self.wordDict[1];
+      self.wordDict = self.trainMultinomial(filename, parseType);
     else:
       self.wordDict = self.trainBernoulli(filename);
 
+    print self.wordDict;
+
+
     self.model = model;
+
 
 
   # parses and trains values for Multinomial Bayes Model
@@ -54,13 +62,22 @@ class classifier:
       words.pop(0);
       if docType == TYPE1:
         for word in words:
+          self.vocab += 1;
           info = word.split(':');
-          dict1[info[0]] = int(info[1]);
+          if dict1.get(info[0], -1) == -1:
+            dict1[info[0]] = int(info[1]);
+          else:
+            dict1[info[0]] += int(info[1]);
+          self.type1Size += int(info[1]);
       elif docType == TYPE2:
-        print "TYPE2"
         for word in words:
+          self.vocab += 1;
           info = word.split(':');
-          dict2[info[0]] = int(info[1]);
+          if dict2.get(info[0], -1) == -1:
+            dict2[info[0]] = int(info[1]);
+          else:
+            dict2[info[0]] += int(info[1]);
+          self.type2Size += int(info[1]);
 
     retList.append(dict1);
     retList.append(dict2);
@@ -70,19 +87,57 @@ class classifier:
 
     return 0;
 
-  # parses file into dictionary
-  # INPUTS -- filename: the file to be parsed
-  # OUTPUTS -- ret: dictionary of parsed words
-  def __parseFile(self, filename):
-
-    return dict();
 
   
 
   # classifies files
   # INPUTS -- testfile: the file to be classified
-  # OUTPUTS -- array of solutions
-  def classifyMultinomial(self, testFile):
+  # OUTPUTS -- accuracy
+  def classifyMultinomial(self, testFile, parseType):
+    if parseType == 0:
+      TYPE1 = '1';
+      TYPE2 = '0';
+    else:
+      TYPE1 = '1';
+      TYPE2 = '-1';
+
+    solutionList = list();
+    classifyList = list();
+    wordList = list();
+    with open(testFile, 'r') as f:
+      temp = f.read();
+    
+    # parse doc into a dictionary of word counts, and accumulate the solution
+    docList = temp.split('\n');
+    for doc in docList:
+      words =  doc.split(' ');
+      solution = words[0];
+      words.pop(0);
+      solutionList.append(solution);
+      for word in words:
+        info =  word.split(':');
+        wordList.append(info[0]);
+      probT1 = self.calculateMultiBayes(wordList,0);
+      probT2 = self.calculateMultiBayes(wordList,1);
+      if probT1 > probT2:
+        classifyList.append(TYPE1);
+      else:
+        classifyList.append(TYPE2);
+      del wordList[:];
+
+
+
+
+    return 0;
+
+  def calculateMultiBayes(self, wordList, type):
+    for testWord in wordList:
+      self.wordDict[0].get(testWord,1);
+
+
+
+
+
     return 0;
 
 
@@ -93,6 +148,8 @@ class classifier:
 
 def main():
   c = classifier("sentiment/rt-train.txt", 1,1);
+  accuracy = c.classifyMultinomial("sentiment/rt-test.txt",1);
+
 
 main();
 
