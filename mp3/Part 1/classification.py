@@ -9,6 +9,7 @@ class Classifier:
     edge = '+'
     body = '#'
     __imageN = 28
+    __imageM = 28
 
     def __init__(self):
 
@@ -19,6 +20,18 @@ class Classifier:
             temp = [0] * self.__imageN * self.__imageN
             self.likelyhoods[i] = temp
             self.classNum[i] = 0
+
+    def changeToFaces(self):
+        self.likelyhoods = dict()
+        self.classNum = dict()
+        self.__imageN = 70
+        self.__imageM = 60
+
+        for i in range(0, 2):
+            temp = [0] * self.__imageN * self.__imageM
+            self.likelyhoods[i] = temp
+            self.classNum[i] = 0
+
 
     """
     def train(self, trainingImages, trainingLabels)
@@ -32,23 +45,23 @@ class Classifier:
                   number of times the pixel appears (likelyhood)
     """
 
-    def train(self, trainingImages, trainingLabels):
+    def train(self, trainingImages, trainingLabels, relaxed=0, n=0, m=0):
         labels = open(trainingLabels, 'r').read()
         images = open(trainingImages, 'r')
 
         labels = labels.split('\n')
 
         counter = 0
-        representation = [0] * self.__imageN * self.__imageN
+        representation = [0] * self.__imageN * self.__imageM
         self.totalImages = 0
 
         """
         Go through every line in the image
         """
         for line in images:
-            for i in range(0, self.__imageN):
+            for i in range(0, self.__imageM):
                 if not line[i] == ' ':
-                    representation[counter * self.__imageN + i] += 1
+                    representation[counter * self.__imageM + i] += 1
 
             counter += 1
 
@@ -58,14 +71,34 @@ class Classifier:
             if counter == self.__imageN:
                 counter = 0
                 nextNum = int(labels.pop(0))
+                if (relaxed):
+                    iterator = 0
+                    for yO in range(0, self.__imageN, n):
+                        for xO in range(0, self.__imageM, m):
+                            binary = list()
+                            for y in range(0, n):
+                                for x in range(0, m):
+                                    binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
+
+                            currPow = 0
+                            num = 0
+                            for b in binary:
+                                num += b * pow(2, currPow)
+                                currPow += 1
+                            if not num == 0:
+                                pdb.set_trace()
+                            self.likelyhoods[nextNum][num][iterator] += 1
+                            iterator += 1
+                else:
+                    for i in range(0, self.__imageN * self.__imageM):
+                        self.likelyhoods[nextNum][i] += representation[i]
+
                 self.classNum[nextNum] += 1
 
                 # Add it up
-                for i in range(0, self.__imageN * self.__imageN):
-                    self.likelyhoods[nextNum][i] += representation[i]
 
                 # Reset the representation array
-                representation = [0] * self.__imageN * self.__imageN
+                representation = [0] * self.__imageN * self.__imageM
                 self.totalImages += 1
 
         images.close()
@@ -75,16 +108,23 @@ class Classifier:
     """
     Deletes the current trained information and runs through the new training set
     """
-    def retrain(self, trainingImages, trainingLabels):
+    def retrain(self, trainingImages, trainingLabels, relaxed=0, n=0, m=0):
         self.likelyhoods = dict()
         self.classNum = dict()
 
         for i in range(0, 10):
-            temp = [0] * self.__imageN * self.__imageN
-            self.likelyhoods[i] = temp
+            if relaxed:
+                temp = dict()
+                for j in range(0, pow(2, n * m)):
+                    temp[j] = [0] * (self.__imageN/n) * (self.__imageM/m)
+                self.likelyhoods[i] = temp
+            else:
+                temp = [0] * self.__imageN * self.__imageM
+                self.likelyhoods[i] = temp
+
             self.classNum[i] = 0
 
-        self.train(trainingImages, trainingLabels)
+        self.train(trainingImages, trainingLabels, relaxed, n, m)
 
     def generateIndex(self, x, y):
         return y * self.__imageN + x
@@ -94,7 +134,7 @@ class Classifier:
         labels = open(trainingLabels, 'r').read().split('\n')
 
         counter = 0
-        representation = [0] * self.__imageN * self.__imageN
+        representation = [0] * self.__imageN * self.__imageM
         accuracy = 0
         total = 0
 
@@ -109,41 +149,21 @@ class Classifier:
             # End of the image, process this
             if counter == self.__imageN:
                 featureSets = dict()
+                temp = dict()
 
-                for idx, posterior in self.likelyhoods.iteritems():
-                    temp = list()
-                    lidx = 0
+                for yO in range(0, self.__imageN, n):
+                    for xO in range(0, self.__imageM, m):
+                        binary = list()
+                        for y in range(0, n):
+                            for x in range(0, m):
+                                binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
 
-                    for y in range(0, self.__imageN, m):
-                        for x in range(0, self.__imageN, n):
-
-                            jointProbabilities = list()
-                            for yi in range(0, m):
-                                for xi in range(0, n):
-                                    jointProbabilities.append(self.generateIndex(xi + x, yi + y))
-
-                            PFeature = ()
-                            for probability in jointProbabilities:
-                                PFeature = PFeature + (posterior[probability]/(0.0 + self.classNum[idx]),)
-
-                            temp.append(PFeature)
-
-                    featureSets[idx] = temp
-
-                temp = list()
-                for y in range(0, self.__imageN, m):
-                    for x in range(0, self.__imageN, n):
-
-                        jointProbabilities = list()
-                        for yi in range(0, m):
-                            for xi in range(0, n):
-                                jointProbabilities.append(self.generateIndex(xi + x, yi + y))
-
-                        PFeature = ()
-                        for probability in jointProbabilities:
-                            PFeature = PFeature + (representation[probability],)
-
-                        temp.append(PFeature)
+                        currPow = 0
+                        num = 0
+                        for b in binary:
+                            num += b * pow(2, currPow)
+                            currPow += 1
+                        self.likelyhoods[nextNum][binary] += 1
 
                 MAP = dict()
                 for idx, features in featureSets.iteritems():
@@ -193,7 +213,7 @@ class Classifier:
         totalPixels = dict()
 
         for idx, representation in self.likelyhoods.iteritems():
-            for i in range(0, self.__imageN * self.__imageN):
+            for i in range(0, self.__imageN * self.__imageM):
                 count += representation[i]
             totalPixels[idx] = count
             count = 0
@@ -224,7 +244,7 @@ class Classifier:
         self.totalImages = 0
 
         for idx in self.likelyhoods.keys():
-            for i in range(0, self.__imageN * self.__imageN):
+            for i in range(0, self.__imageN * self.__imageM):
                 self.likelyhoods[idx][i] += constant
             self.classNum[idx] += constant * self.classNum[idx]
             self.totalImages += self.classNum[idx]
@@ -275,7 +295,7 @@ class Classifier:
             self.confusionMatrix.append(temp)
 
         counter = 0
-        representation = [0] * self.__imageN * self.__imageN
+        representation = [0] * self.__imageN * self.__imageM
         accuracy = 0
         total = 0
         classClassified = [0] * self.__imageN
@@ -286,9 +306,9 @@ class Classifier:
         for line in images:
 
             # if the line is not the end of an image
-            for i in range(0, self.__imageN):
+            for i in range(0, self.__imageM):
                 if not line[i] == ' ':
-                    representation[counter * self.__imageN + i] += 1
+                    representation[counter * self.__imageM + i] += 1
 
             # When counter is equal to the size of an image we can try to classify it
             counter += 1
@@ -301,10 +321,10 @@ class Classifier:
                 # Go through the learned likelyhoods and create the naive bayes probability
                 for idx, posterior in self.likelyhoods.iteritems():
                     Pclass = self.classNum[idx] / (self.totalImages + 0.0)
-                    PixelP = [0] * self.__imageN * self.__imageN
+                    PixelP = [0] * self.__imageN * self.__imageM
 
                     # For each pixel calculate the probability
-                    for i in range(0, self.__imageN * self.__imageN):
+                    for i in range(0, self.__imageN * self.__imageM):
                         """
                         If representation is 1 then do pixels/total
                         otherwise do 1-pixels/total for the likelyhood that it didn't appear there
@@ -317,7 +337,7 @@ class Classifier:
                     # P(x | e) maxSetOf P(e | x) * P(x)
                     testing[idx] = math.log(Pclass, 2)
 
-                    for i in range(0, self.__imageN * self.__imageN):
+                    for i in range(0, self.__imageN * self.__imageM):
                         testing[idx] += math.log(PixelP[i], 2)
 
                 """
@@ -357,13 +377,13 @@ class Classifier:
                 Increased the accuracy up 1.5%
                 """
                 if self.LEARN:
-                    for i in range(0, self.__imageN * self.__imageN):
+                    for i in range(0, self.__imageN * self.__imageM):
                         self.likelyhoods[actual][i] += representation[i]
 
                     self.classNum[actual] += 1
                     self.totalImages += 1
 
-                representation = [0] * self.__imageN * self.__imageN
+                representation = [0] * self.__imageN * self.__imageM
                 total += 1
                 totalPerDigit[actual] += 1
 
@@ -399,7 +419,7 @@ class Classifier:
             high.write(str(PHighest[i]) + "\n")
             low.write(str(PLowest[i]) + "\n")
             counter = 0
-            for idx in range(0, self.__imageN * self.__imageN):
+            for idx in range(0, self.__imageN * self.__imageM):
                 high.write(str(highest[i][idx]))
                 low.write(str(lowest[i][idx]))
                 counter += 1
@@ -427,11 +447,33 @@ class Classifier:
                 toPrint.append(self.likelyhoods[maxConfusion[i][1]])
                 toPrint.append(ratios)
                 for j in range(0, 3):
+                    counter = 0
                     for pixel in range(0, self.__imageN * self.__imageN):
+                        toWrite = 0
+                        counter += 1
                         if j == 2:
-                            f.write(str(math.log(toPrint[j][pixel], 2)) + ' ')
+                            toWrite = math.log(toPrint[j][pixel], 2)
                         else:
-                            f.write(str(math.log(toPrint[j][pixel]/(0.0 + self.classNum[maxConfusion[i][j]]), 2)) + ' ')
+                            toWrite = toPrint[j][pixel]/(0.0 + self.classNum[maxConfusion[i][j]]) #* self.classNum[maxConfusion[i][j]]/(self.totalImages + 0.0)
+
+
+                        if j == 2:
+                            if toWrite < 0:
+                                f.write('-')
+                            elif abs(1 - toWrite) < 0.2:
+                                f.write('#')
+                            else:
+                                f.write('+')
+                        else:
+                            if abs(toWrite) < 0.2:
+                                f.write('-')
+                            elif abs(toWrite) > 0.35:
+                                f.write('+')
+                            else:
+                                f.write('#')
+
+                        if counter % self.__imageN == 0:
+                            f.write("\n")
                     f.write('\n')
 
     def __oddRatio(self, believed, actual, pixel):
@@ -445,6 +487,7 @@ class Classifier:
 
 if __name__ == "__main__":
     c = Classifier()
+    """
     c.train('./digitdata/trainingimages', './digitdata/traininglabels')
     cMatrix = c.test('./digitdata/testimages', './digitdata/testlabels')
 
@@ -455,10 +498,21 @@ if __name__ == "__main__":
         print row
         i += 1
 
-    # oddRatios = c.oddRatios(cMatrix)
+    oddRatios = c.oddRatios(cMatrix)
 
-    n = 2
-    m = 2
-    c.retrain('./digitdata/trainingimages', './digitdata/traininglabels')
-    c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', n, m)
+    print "\n\n\n"
+
+    c.changeToFaces()
+    c.train('./facedata/facedatatrain', './facedata/facedatatrainlabels')
+    cMatrix = c.test('./facedata/facedatatest', './facedata/facedatatestlabels')
+
+    i = 0
+    for row in cMatrix:
+        print i,
+        print row
+        i += 1
+
+    """
+    c.retrain('./digitdata/trainingimages', './digitdata/traininglabels', 1, 2, 2)
+    c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', 2, 2)
 
