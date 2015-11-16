@@ -13,8 +13,10 @@ class Classifier:
 
     def __init__(self):
 
+        self.faces = False
         self.likelyhoods = dict()
         self.classNum = dict()
+        self.overlapping = False
 
         for i in range(0, 10):
             temp = [0] * self.__imageN * self.__imageN
@@ -22,6 +24,7 @@ class Classifier:
             self.classNum[i] = 0
 
     def changeToFaces(self):
+        self.faces = True
         self.likelyhoods = dict()
         self.classNum = dict()
         self.__imageN = 70
@@ -73,20 +76,36 @@ class Classifier:
                 nextNum = int(labels.pop(0))
                 if (relaxed):
                     iterator = 0
-                    for yO in range(0, self.__imageN, n):
-                        for xO in range(0, self.__imageM, m):
-                            binary = list()
-                            for y in range(0, n):
-                                for x in range(0, m):
-                                    binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
+                    if self.overlapping == True:
+                        for yO in range(0, self.__imageN - (n - 1)):
+                            for xO in range(0, self.__imageM - (m - 1)):
+                                binary = list()
+                                for y in range(0, n):
+                                    for x in range(0, m):
+                                        binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
 
-                            currPow = 0
-                            num = 0
-                            for b in binary:
-                                num += b * pow(2, currPow)
-                                currPow += 1
-                            self.likelyhoods[nextNum][num][iterator] += 1
-                            iterator += 1
+                                currPow = 0
+                                num = 0
+                                for b in binary:
+                                    num += b * pow(2, currPow)
+                                    currPow += 1
+                                self.likelyhoods[nextNum][num][iterator] += 1
+                                iterator += 1
+                    else:
+                        for yO in range(0, self.__imageN, n):
+                            for xO in range(0, self.__imageM, m):
+                                binary = list()
+                                for y in range(0, n):
+                                    for x in range(0, m):
+                                        binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
+
+                                currPow = 0
+                                num = 0
+                                for b in binary:
+                                    num += b * pow(2, currPow)
+                                    currPow += 1
+                                self.likelyhoods[nextNum][num][iterator] += 1
+                                iterator += 1
                 else:
                     for i in range(0, self.__imageN * self.__imageM):
                         self.likelyhoods[nextNum][i] += representation[i]
@@ -101,7 +120,7 @@ class Classifier:
 
         images.close()
         self.smoothing(n, m)
-        self.totalPixels = self.countPixels()
+        self.totalPixels = self.countPixels(n, m)
 
     """
     Deletes the current trained information and runs through the new training set
@@ -114,7 +133,10 @@ class Classifier:
             if relaxed:
                 temp = dict()
                 for j in range(0, pow(2, n * m)):
-                    temp[j] = [0] * (self.__imageN/n) * (self.__imageM/m)
+                    if self.overlapping == True:
+                        temp[j] = [0] * (self.__imageN - (n - 1)) * (self.__imageM - (m - 1))
+                    else:
+                        temp[j] = [0] * (self.__imageN/n) * (self.__imageM/m)
                 self.likelyhoods[i] = temp
             else:
                 temp = [0] * self.__imageN * self.__imageM
@@ -146,38 +168,56 @@ class Classifier:
 
             # End of the image, process this
             if counter == self.__imageN:
-                featureSets = dict()
                 temp = dict()
+                rep = list()
 
-                for yO in range(0, self.__imageN, n):
-                    for xO in range(0, self.__imageM, m):
-                        binary = list()
-                        for y in range(0, n):
-                            for x in range(0, m):
-                                binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
+                if self.overlapping == True:
+                    for yO in range(0, self.__imageN - (n - 1)):
+                        for xO in range(0, self.__imageM - (m - 1)):
+                            binary = list()
+                            for y in range(0, n):
+                                for x in range(0, m):
+                                    binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
 
-                        currPow = 0
-                        num = 0
-                        for b in binary:
-                            num += b * pow(2, currPow)
-                            currPow += 1
-                        self.likelyhoods[nextNum][binary] += 1
+                            currPow = 0
+                            num = 0
+                            for b in binary:
+                                num += b * pow(2, currPow)
+                                currPow += 1
+                            rep.append(num)
+                else:
+                    for yO in range(0, self.__imageN, n):
+                        for xO in range(0, self.__imageM, m):
+                            binary = list()
+                            for y in range(0, n):
+                                for x in range(0, m):
+                                    binary.append(representation[(yO + y) * self.__imageN + (x + xO)])
+
+                            currPow = 0
+                            num = 0
+                            for b in binary:
+                                num += b * pow(2, currPow)
+                                currPow += 1
+                            rep.append(num)
 
                 MAP = dict()
-                for idx, features in featureSets.iteritems():
-                    probability = self.classNum[idx]/(self.totalImages + 0.0)
 
-                    for j in range(0, len(temp)):
-                        masterFeature = features[j]
-                        testFeature = temp[j]
+                for idx, posterior in self.likelyhoods.iteritems():
 
-                        for i in range(0, len(masterFeature)):
-                            if testFeature[i] == 1:
-                                probability += math.log(masterFeature[i], 2)
-                            else:
-                                probability += math.log(1 - masterFeature[i], 2)
+                    probs = list()
+                    probabilities = 0.0
+                    if self.overlapping == True:
+                        for i in range(0, (self.__imageN - (n - 1)) * (self.__imageM - (m - 1))):
+                            probs.append(posterior[rep[i]][i]/(self.classNum[idx] + 0.0))
+                    else:
+                        for i in range(0, self.__imageN/n * self.__imageM/m):
+                            probs.append(posterior[rep[i]][i]/(self.classNum[idx] + 0.0))
 
-                    MAP[idx] = probability
+                    for prob in probs:
+                        probabilities += math.log(prob, 2)
+
+                    probabilities += math.log(self.classNum[idx]/(self.totalImages + 0.0), 2)
+                    MAP[idx] = probabilities
 
                 maximum = -9999999999999.9
                 finalIdx = idx
@@ -210,12 +250,19 @@ class Classifier:
         count = 0
         totalPixels = dict()
 
-        for idx, representation in self.likelyhoods.iteritems():
-            for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
-                for b in range(0, pow(2, n*m)):
+        if self.faces == True:
+            for idx, representation in self.likelyhoods.iteritems():
+                for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
                     count += representation[i]
-            totalPixels[idx] = count
-            count = 0
+                totalPixels[idx] = count
+                count = 0
+        else:
+            for idx, representation in self.likelyhoods.iteritems():
+                for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
+                    for b in range(0, pow(2, n*m)):
+                        count += representation[b][i]
+                totalPixels[idx] = count
+                count = 0
 
         return totalPixels
 
@@ -238,14 +285,25 @@ class Classifier:
     """
     Smooth the likelyhoods, called after the main training function
     """
-    def smoothing(self, n=0, m=0):
+    def smoothing(self, n=1, m=1):
         constant = self.constant
         self.totalImages = 0
 
         for idx in self.likelyhoods.keys():
-            for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
-                for b in range(0, pow(2, n*m)):
-                    self.likelyhoods[idx][b][i] += constant
+            if self.overlapping == True:
+                for i in range(0, (self.__imageN - (n - 1)) * (self.__imageM - (m - 1))):
+                    for b in range(0, pow(2, n*m)):
+                        self.likelyhoods[idx][b][i] += constant
+            else:
+                if (self.faces == True):
+                    n = 1
+                    m = 1
+                for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
+                    if self.faces == False:
+                        for b in range(0, pow(2, n*m)):
+                            self.likelyhoods[idx][b][i] += constant
+                    else:
+                        self.likelyhoods[idx][i] += constant
             self.classNum[idx] += constant * self.classNum[idx]
             self.totalImages += self.classNum[idx]
 
@@ -427,6 +485,9 @@ class Classifier:
                     high.write("\n")
                     low.write("\n")
 
+    def setOverlapping(self):
+        self.overlapping = True
+
     def oddRatios(self, confusionMatrix):
         maxConfusion = list()
 
@@ -512,7 +573,24 @@ if __name__ == "__main__":
         print row
         i += 1
 
+
     """
-    c.retrain('./digitdata/trainingimages', './digitdata/traininglabels', 1, 2, 2)
-    c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', 2, 2)
+    blocks = list()
+    blocks.append((2, 2))
+    blocks.append((2, 4))
+    blocks.append((4, 2))
+    blocks.append((4, 4))
+
+    for block in blocks:
+        c.retrain('./digitdata/trainingimages', './digitdata/traininglabels', 1, block[0], block[1])
+        c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', block[0], block[1])
+
+    blocks.append((2, 3))
+    blocks.append((3, 2))
+    blocks.append((3, 3))
+    c.setOverlapping()
+
+    for block in blocks:
+        c.retrain('./digitdata/trainingimages', './digitdata/traininglabels', 1, block[0], block[1])
+        c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', block[0], block[1])
 
