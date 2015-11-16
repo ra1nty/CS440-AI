@@ -85,8 +85,6 @@ class Classifier:
                             for b in binary:
                                 num += b * pow(2, currPow)
                                 currPow += 1
-                            if not num == 0:
-                                pdb.set_trace()
                             self.likelyhoods[nextNum][num][iterator] += 1
                             iterator += 1
                 else:
@@ -102,7 +100,7 @@ class Classifier:
                 self.totalImages += 1
 
         images.close()
-        self.smoothing()
+        self.smoothing(n, m)
         self.totalPixels = self.countPixels()
 
     """
@@ -208,13 +206,14 @@ class Classifier:
 
         print "%f accuracy" % ((accuracy/(total + 0.0)))
 
-    def countPixels(self):
+    def countPixels(self, n=0, m=0):
         count = 0
         totalPixels = dict()
 
         for idx, representation in self.likelyhoods.iteritems():
-            for i in range(0, self.__imageN * self.__imageM):
-                count += representation[i]
+            for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
+                for b in range(0, pow(2, n*m)):
+                    count += representation[i]
             totalPixels[idx] = count
             count = 0
 
@@ -239,13 +238,14 @@ class Classifier:
     """
     Smooth the likelyhoods, called after the main training function
     """
-    def smoothing(self):
+    def smoothing(self, n=0, m=0):
         constant = self.constant
         self.totalImages = 0
 
         for idx in self.likelyhoods.keys():
-            for i in range(0, self.__imageN * self.__imageM):
-                self.likelyhoods[idx][i] += constant
+            for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
+                for b in range(0, pow(2, n*m)):
+                    self.likelyhoods[idx][b][i] += constant
             self.classNum[idx] += constant * self.classNum[idx]
             self.totalImages += self.classNum[idx]
 
