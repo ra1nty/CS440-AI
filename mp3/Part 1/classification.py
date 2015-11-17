@@ -251,6 +251,8 @@ class Classifier:
         totalPixels = dict()
 
         if self.faces == True:
+            n = 1
+            m = 1
             for idx, representation in self.likelyhoods.iteritems():
                 for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
                     count += representation[i]
@@ -295,7 +297,7 @@ class Classifier:
                     for b in range(0, pow(2, n*m)):
                         self.likelyhoods[idx][b][i] += constant
             else:
-                if (self.faces == True):
+                if (self.faces == True or self.overlapping == False):
                     n = 1
                     m = 1
                 for i in range(0, (self.__imageN/n) * (self.__imageM/m)):
@@ -478,8 +480,14 @@ class Classifier:
             low.write(str(PLowest[i]) + "\n")
             counter = 0
             for idx in range(0, self.__imageN * self.__imageM):
-                high.write(str(highest[i][idx]))
-                low.write(str(lowest[i][idx]))
+                if (highest[i][idx] == 1):
+                    high.write("#")
+                else:
+                    high.write(" ")
+                if (lowest[i][idx] == 1):
+                    low.write("#")
+                else:
+                    low.write(" ")
                 counter += 1
                 if counter % self.__imageN == 0:
                     high.write("\n")
@@ -548,7 +556,6 @@ class Classifier:
 
 if __name__ == "__main__":
     c = Classifier()
-    """
     c.train('./digitdata/trainingimages', './digitdata/traininglabels')
     cMatrix = c.test('./digitdata/testimages', './digitdata/testlabels')
 
@@ -560,8 +567,7 @@ if __name__ == "__main__":
         i += 1
 
     oddRatios = c.oddRatios(cMatrix)
-
-    print "\n\n\n"
+    """
 
     c.changeToFaces()
     c.train('./facedata/facedatatrain', './facedata/facedatatrainlabels')
@@ -573,8 +579,6 @@ if __name__ == "__main__":
         print row
         i += 1
 
-
-    """
     blocks = list()
     blocks.append((2, 2))
     blocks.append((2, 4))
@@ -593,4 +597,5 @@ if __name__ == "__main__":
     for block in blocks:
         c.retrain('./digitdata/trainingimages', './digitdata/traininglabels', 1, block[0], block[1])
         c.testRelaxed('./digitdata/testimages', './digitdata/testlabels', block[0], block[1])
+    """
 
