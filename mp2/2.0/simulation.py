@@ -102,74 +102,92 @@ def parseUserInput(move):
 
 
 def main():
-  print "Keren Minimax vs Minimax"
-  b = board("./game_boards/Keren.txt");
-  p1 = MinimaxPlayer(1);
-  p2 = MinimaxPlayer(2);
-  s = Simulation(b);
-  print "Player 1 expanded Nodes: ", p1.Nodes;  
-  print "Player 1 Moves: ", p1.moves;  
+  # print "Keren MinimaxPlayer vs AlphaBeta"
+  # b = board("./game_boards/Keren.txt");
+  # p1 = AlphaBeta(1);
+  # p2 = MinimaxPlayer(2);
+  # s = Simulation(b);
 
-  print "Player 2 Expanded Nodes: ", p2.Nodes;
-  print "Player 2 Moves: ", p2.moves;
+  # s.run(p1,p2, False);
+  # print "Player 1 expanded Nodes: ", p1.Nodes;
+  # print "Player 1 Moves: ", p1.moves;
+  # print "Player 1 avg node per move:", p1.Nodes/p1.moves
+  # print "Player 1 avg time:",float(p1.timerun/p1.moves)
 
-  print;
+  # print "Player 2 Expanded Nodes: ", p2.Nodes;
+  # print "Player 2 Moves: ", p2.moves;
+  # print "Player 2 avg node per move:", p2.Nodes/p2.moves
+  # print "Player 2 avg time:",float(p2.timerun/p2.moves)
+  # print;
 
-  print "Narvik Minimax vs Minimax"
-  b = board("./game_boards/Narvik.txt");
-  p1 = MinimaxPlayer(1);
-  p2 = MinimaxPlayer(2);
-  s = Simulation(b);
-  #s.run(p1,p2, False);
-  print "Player 1 expanded Nodes: ", p1.Nodes;  
-  print "Player 1 Moves: ", p1.moves;  
-
-  print "Player 2 Expanded Nodes: ", p2.Nodes;
-  print "Player 2 Moves: ", p2.moves;  
-
-  print;
-  print "Sevastopol Minimax vs Minimax"
-  b = board("./game_boards/Sevastopol.txt");
-  p1 = MinimaxPlayer(1);
-  p2 = MinimaxPlayer(2);
-  s = Simulation(b);
-  #s.run(p1,p2, False);
-  print "Player 1 expanded Nodes: ", p1.Nodes;  
-  print "Player 1 Moves: ", p1.moves;  
-
-  print "Player 2 Expanded Nodes: ", p2.Nodes;
-  print "Player 2 Moves: ", p2.moves;
-
-  print;
+  # print "Narvik AlphaBeta vs Minimax"
+  # b = board("./game_boards/Narvik.txt");
+  # p1 = AlphaBeta(1);
+  # p2 = MinimaxPlayer(2);
+  # s = Simulation(b);
+  # s.run(p1,p2, False);
+  # print "Player 1 expanded Nodes: ", p1.Nodes;
+  # print "Player 1 Moves: ", p1.moves;
+  # print "Player 1 avg node per move:", p1.Nodes/p1.moves
 
 
-  print "Smolensk Minimax vs Minimax"
-  b = board("./game_boards/Smolensk.txt");
-  p1 = MinimaxPlayer(1);
-  
-  p2 = MinimaxPlayer(2);
+  # print "Player 2 Expanded Nodes: ", p2.Nodes;
+  # print "Player 2 Moves: ", p2.moves;
+  # print "Player 2 avg node per move:", p2.Nodes/p2.moves
 
-  s = Simulation(b);
-  #s.run(p1,p2, False);
-  
-  print "Player 1 expanded Nodes: ", p1.Nodes;  
-  print "Player 1 Moves: ", p1.moves;  
+  # print;
 
-  print "Player 2 Expanded Nodes: ", p2.Nodes;
-  print "Player 2 Moves: ", p2.moves;
-  print;
+  # print "Sevastopol AlphaBeta vs Minimax"
+  # b = board("./game_boards/Sevastopol.txt");
+  # p1 = AlphaBeta(1);
+  # p2 = MinimaxPlayer(2);
+  # s = Simulation(b);
+  # s.run(p1,p2, False);
+  # print "Player 1 expanded Nodes: ", p1.Nodes;
+  # print "Player 1 Moves: ", p1.moves;
+  # print "Player 1 avg node per move:", p1.Nodes/p1.moves
 
-  print "Westerplatte Minimax vs Minimax"
+
+  # print "Player 2 Expanded Nodes: ", p2.Nodes;
+  # print "Player 2 Moves: ", p2.moves;
+  # print "Player 2 avg node per move:", p2.Nodes/p2.moves
+
+  # print;
+
+
+  # print "Smolensk AlphaBeta vs Minimax"
+  # b = board("./game_boards/Smolensk.txt");
+  # p1 = AlphaBeta(1);
+  # p2 = MinimaxPlayer(2);
+  # s = Simulation(b);
+  # s.run(p1,p2, False);
+
+  # print "Player 1 expanded Nodes: ", p1.Nodes;
+  # print "Player 1 Moves: ", p1.moves;
+  # print "Player 1 avg node per move:", p1.Nodes/p1.moves
+
+
+  # print "Player 2 Expanded Nodes: ", p2.Nodes;
+  # print "Player 2 Moves: ", p2.moves;
+  # print "Player 2 avg node per move:", p2.Nodes/p2.moves
+
+  # print;
+
+  print "Westerplatte AlphaBeta vs Minimax"
   b = board("./game_boards/Westerplatte.txt");
-  p1 = MinimaxPlayer(1);
+  p1 = AlphaBeta(1);
   p2 = MinimaxPlayer(2);
   s = Simulation(b);
- # s.run(p1,p2, False);
-  print "Player 1 expanded Nodes: ", p1.Nodes;  
-  print "Player 1 Moves: ", p1.moves;  
+  s.run(p1,p2, False);
+  # print "Player 1 expanded Nodes: ", p1.Nodes;
+  # print "Player 1 Moves: ", p1.moves;
+  # print "Player 1 avg node per move:", p1.Nodes/p1.moves
 
-  print "Player 2 Expanded Nodes: ", p2.Nodes;
-  print "Player 2 Moves: ", p2.moves;
+
+  # print "Player 2 Expanded Nodes: ", p2.Nodes;
+  # print "Player 2 Moves: ", p2.moves;
+  # print "Player 2 avg node per move:", p2.Nodes/p2.moves
+
 
 
 main()
