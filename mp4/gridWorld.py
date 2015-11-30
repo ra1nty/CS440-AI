@@ -73,31 +73,31 @@ def valueIteration():
         values.append(curr)
         moves.append(currMoves)
 
-        for i in range(len(mazeWorld)):
-            for j in range(len(mazeWorld[i])):
-                if curr[i][j] == -999:
-                    print "~~~W~~~".ljust(6) + "|",
-                else:
-                    print str(curr[i][j]).ljust(6)[0:6] + " |",
-            print ""
-
-        for i in range(len(mazeWorld)):
-            for j in range(len(mazeWorld[i])):
-                move = currMoves[i][j]
-                if move == LEFT:
-                    print "<- |",
-                elif move == RIGHT:
-                    print "-> |",
-                elif move == UP:
-                    print "^  |",
-                else:
-                    print "v  |",
-            print ""
 
         if converged(values[t], values[t - 1]):
             break
 
         t += 1
+    for i in range(len(mazeWorld)):
+        for j in range(len(mazeWorld[i])):
+            if values[t-1][i][j] == -999:
+                print "~~~W~~~".ljust(6) + "|",
+            else:
+                print str(values[t-1][i][j]).ljust(6)[0:6] + " |",
+        print ""
+
+    for i in range(len(mazeWorld)):
+        for j in range(len(mazeWorld[i])):
+            move = moves[t-1][i][j]
+            if move == LEFT:
+                print "<- |",
+            elif move == RIGHT:
+                print "-> |",
+            elif move == UP:
+                print "^  |",
+            else:
+                print "v  |",
+        print ""
 
 def converged(first, second):
     thresh = 0.0001
