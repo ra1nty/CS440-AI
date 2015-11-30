@@ -76,9 +76,9 @@ def valueIteration():
         for i in range(len(mazeWorld)):
             for j in range(len(mazeWorld[i])):
                 if curr[i][j] == -999:
-                    print "W |",
+                    print "~~~W~~~".ljust(6) + "|",
                 else:
-                    print str(curr[i][j]) + "|",
+                    print str(curr[i][j]).ljust(6)[0:6] + " |",
             print ""
 
         for i in range(len(mazeWorld)):
@@ -93,7 +93,6 @@ def valueIteration():
                 else:
                     print "v  |",
             print ""
-        pdb.set_trace()
 
         if converged(values[t], values[t - 1]):
             break
