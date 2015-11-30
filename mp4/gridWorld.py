@@ -62,12 +62,12 @@ def valueIteration():
 
                         if y < len(mazeWorld) and y >= 0 and x < len(mazeWorld[0]) and x >= 0:
                             if not mazeWorld[y][x] == -999:
-                                total += (action[2] * (discount * prev[action[0]][action[1]]))
+                                total += (action[2] * (prev[action[0]][action[1]]))
 
                     if total > maxAction:
                         bestAction = actionSet
                         maxAction = total
-                curr[block[0]][block[1]] = maxAction
+                curr[block[0]][block[1]] = discount * maxAction
                 currMoves[block[0]][block[1]] = bestAction[0][3]
 
         values.append(curr)
