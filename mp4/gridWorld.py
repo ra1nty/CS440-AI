@@ -32,50 +32,111 @@ def valueIteration():
     t = 1
     values = list()
     values.append(copy.deepcopy(mazeWorld))
+    moves = list()
 
     while True:
-        
-        
-        if converges(values[t], values[t - 1]):
+        terminals = list()
+        curr = copy.deepcopy(values[t - 1])
+        currMoves = copy.deepcopy(values[t-1])
+
+        for y in range(len(mazeWorld)):
+            for x in range(len(mazeWorld[y])):
+                if values[t-1][y][x] is not 0 and values[t-1][y][x] is not -999:
+                    terminals.append((y, x))
+
+        for terminal in terminals:
+            surroundingBlocks = getSurroundingBlocks(terminal)
+
+            for block in surroundingBlocks:
+                actions = getActions(block)
+                prev = values[t - 1]
+                maxAction = -9999
+                bestAction = -1
+
+                for actionSet in actions:
+                    total = 0.0
+
+                    for action in actionSet:
+                        y = action[0]
+                        x = action[1]
+
+                        if y < len(mazeWorld) and y >= 0 and x < len(mazeWorld[0]) and x >= 0:
+                            if not mazeWorld[y][x] == -999:
+                                total += (action[2] * (discount * prev[action[0]][action[1]]))
+
+                    if total > maxAction:
+                        bestAction = actionSet
+                        maxAction = total
+                curr[block[0]][block[1]] = maxAction
+                currMoves[block[0]][block[1]] = bestAction[0][3]
+
+        values.append(curr)
+        moves.append(currMoves)
+
+        for i in range(len(mazeWorld)):
+            for j in range(len(mazeWorld[i])):
+                if curr[i][j] == -999:
+                    print "W |",
+                else:
+                    print str(curr[i][j]) + "|",
+            print ""
+
+        for i in range(len(mazeWorld)):
+            for j in range(len(mazeWorld[i])):
+                move = currMoves[i][j]
+                if move == LEFT:
+                    print "<- |",
+                elif move == RIGHT:
+                    print "-> |",
+                elif move == UP:
+                    print "^  |",
+                else:
+                    print "v  |",
+            print ""
+        pdb.set_trace()
+
+        if converged(values[t], values[t - 1]):
             break
+
         t += 1
 
-def converges(first, second):
-    thresh = 0.01
+def converged(first, second):
+    thresh = 0.0001
     for i in range(len(first)):
         for j in range(len(first[i])):
             if abs(first[i][j] - second[i][j]) > thresh:
                 return False
     return True
 
-def getFutureStates(startX, startY, prev):
-    memo = list()
-    visited = Set()
-    for i in range(len(mazeWorld)):
-        temp = list()
-        for j in range(len(mazeWorld[0])):
-            temp.append(0)
-        memo.append(temp)
+def getSurroundingBlocks(block):
+    blocks = list()
+    yA = block[0]
+    xA = block[1]
 
-    _getFutureStates(startX, startY, memo, visited, prev)
-    return memo
+    for y in range(yA - 1, yA + 2):
+        for x in range(xA - 1, xA + 2):
+            if x == xA and y == yA:
+                continue
+            if y < len(mazeWorld) and y >= 0 and x < len(mazeWorld[0]) and x >= 0:
+                if mazeWorld[y][x] is 0 and mazeWorld[y][x] is not -999:
+                    blocks.append((y, x))
 
-def _getFutureStates(x, y, memo, visited, prev):
-    pass
+    return blocks
 
-def getActions(y, x):
+"""
+Only return valid actions
+"""
+def getActions(node):
     actions = list()
-    actions.append([(y - 1, x, intended, UP), (y, x - 1, left, LEFT), (y, x + 1, right, RIGHT)])
-    actions.append([(y, x - 1, intended, LEFT), (y + 1, x - 1, left, DOWN), (y - 1, x - 1, right, UP)])
-    actions.append([(y + 1, x, intended, DOWN), (y, x - 1, left, RIGHT), (y, x + 1, right, LEFT)])
-    actions.append([(y, x + 1, intended, RIGHT), (y + 1, x, left, DOWN), (y - 1, x, right, UP)])
+    x = node[1]
+    y = node[0]
+
+    actions.append([(y - 1, x, intended, UP), (y, x + 1, right), (y, x - 1, left)])
+    actions.append([(y + 1, x, intended, DOWN), (y, x + 1, right), (y, x - 1, left)])
+    actions.append([(y, x + 1, intended, RIGHT), (y - 1, x, right), (y + 1, x, left)])
+    actions.append([(y, x - 1, intended, LEFT), (y - 1, x, right), (y + 1, x, left)])
+
     return actions
-
-
-def validAction(action):
-    y = action[0]
-    x = action[1]
-    return (y < len(mazeWorld) and y > 0 and x < len(mazeWorld[0]) and x > 0)
 
 if __name__ == "__main__":
     main()
