@@ -89,7 +89,12 @@ def valueIteration():
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
             move = moves[t-1][i][j]
-            if move == LEFT:
+            if mazeWorld[i][j] is not 0:
+                if mazeWorld[i][j] == -999:
+                    print "W  |",
+                else:
+                    print str(mazeWorld[i][j])[0:2].ljust(3) + "|",
+            elif move == LEFT:
                 print "<- |",
             elif move == RIGHT:
                 print "-> |",
