@@ -1,0 +1,3 @@
+> /Users/Jeff/dev/cs440-AI/mp4/gridWorld.py(49)valueIteration()
+-> for action in a:
+(Pdb) 
