@@ -25,43 +25,48 @@ DOWN = 2
 LEFT = 1
 RIGHT = 3
 
+INT_MIN = -99999
+
 def state(x, y):
     return y * len(mazeWorld) + x
 
 def learningRate(time):
     return 60/(59.0 + time)
 
-def reward(y, x):
+def reward(x, y):
     if mazeWorld[y][x] == 0:
         return -0.4
     elif mazeWorld[y][x] == -999:
-        return 0
+        return -999
     else:
         return mazeWorld[y][x]
 
 def evalFunc(q, n):
     return q
 
+def tupleFromState(s):
+    return (s/len(mazeWorld), s % len(mazeWorld))
+
 def initializeQLookup():
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
-            for k in range(0, 4):
-                if not mazeWorld[i][j] == -999:
-                    QLookup[(state(j, i), k)] = reward(i, j)
+            for k in range(4):
+               # if not mazeWorld[i][j] == -999:
+                QLookup[(state(j, i), k)] = reward(j, i)
 
 def initializeMoveSet(moves):
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
             for k in range(4):
-                if not mazeWorld[i][j] == -999:
-                    moves[(state(i, j), k)] = 0.0
+               # if not mazeWorld[i][j] == -999:
+                moves[(state(j, i), k)] = 0.0
 
 def initializeMoveCount(moves):
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
             for k in range(4):
-                if not mazeWorld[i][j] == -999:
-                    moves[(state(i, j), k)] = 0
+               # if not mazeWorld[i][j] == -999:
+                moves[(state(j, i), k)] = 0
 
 def performAction(s, action):
     x = s[1]
@@ -76,16 +81,26 @@ def performAction(s, action):
     else:
         x += 1
 
-    if y < len(mazeWorld) and y >= 0 and x < len(mazeWorld[0]) and x >= 0:
+    # Clamp values in mazeworld
+    if (y < len(mazeWorld) and y >= 0 and x < len(mazeWorld[0]) and x >= 0):
         if mazeWorld[y][x] == -999:
-            pdb.set_trace()
+        # if it's a wall reset it to the initial move
             y = s[0]
             x = s[1]
     else:
         y = s[0]
         x = s[1]
 
+
+    # Return the state
     return state(x, y)
+
+def checkEnd(s):
+    x = s[1]
+    y = s[0]
+    if not mazeWorld[y][x] == -999 and not mazeWorld[y][x] == 0:
+        return 1
+    return 0
 
 def reinforcementLearning():
     moveSet = dict()
@@ -96,46 +111,77 @@ def reinforcementLearning():
 
     currState = starting
     iteration = 0
-    QUpdate = lambda state, action, nextstate, maxAction, time: QLookup[(state, action)] + learningRate(time) * (reward(state) + discount * (QLookup[(nextstate, maxAction)] - QLookup[(state, action)]))
 
-    while iteration < 100000:
-        maxAction = 0
-        nextState = 0
-        nextMaxAction = 0
+    # s - number
+    # action - number
+    # nextstate - tuple
+    # maxAction - number
+    # time - number
 
-        tempMax = 0
-        maxVal = -99999
-        tempNextState = 0
+    episodes = 0
 
-        # Find next max state
+    while episodes < 870:
+        maxCurrAction = 0
+        maxVal = INT_MIN
+
+        # Find the max action at current state
         for action in range(4):
             tempNextState = performAction(currState, action)
-            try:
-                tempMax = evalFunc(QLookup[(tempNextState, action)], moveCount[(tempNextState, action)])
-            except Exception:
-                pdb.set_trace()
-            if tempMax > maxVal:
-                maxVal = tempMax
-                maxAction = action
-                nextState = tempNextState
+            tempVal = QLookup[(state(currState[1], currState[0]), action)]
+            if tempVal > maxVal:
+                maxVal = tempVal
+                maxCurrAction = action
 
-        tempMax = 0
-        maxVal = -99999
-        tempNextState = 0
-
-        # Find next max action
+        maxNextAction = 0
+        maxVal = INT_MIN
+        maxNextState = tupleFromState(performAction(currState, maxCurrAction))
 
         for action in range(4):
-            tempNextState = performAction(nextState, action)
-            tempMax = evalFunc(QLookup[(tempNextState, action)], moveCount[(tempNextState, action)])
-            if tempMax > maxVal:
-                maxVal = tempMax
-                nextMaxAction = action
+            tempNextState = performAction(maxNextState, action)
+            tempVal = QLookup[(state(maxNextState[1], maxNextState[0]), action)]
+            if tempVal > maxVal:
+                maxVal = tempVal
+                maxNextAction = action
 
-        moveCount[(tempNextState, action)] += 1
-        QLookup[(state, action)] = QUpdate(state(currState[0], currState[1]), maxAction, nextState, nextMaxAction, iteration)
+        moveCount[(state(currState[1], currState[0]), action)] += 1
+        QLookup[(state(currState[1], currState[0]), maxCurrAction)] = QLookup[(state(maxNextState[1], maxNextState[0]), maxCurrAction)] + learningRate(iteration) * (reward(currState[1], currState[0]) + discount * (QLookup[(state(maxNextState[1], maxNextState[0]), maxNextAction)]) - QLookup[(state(currState[1], currState[0]), maxCurrAction)])
+
+#        print "Curr state (%d, %d)\nNext State (%d, %d)\nQLookup %f" % (currState[0], currState[1], maxNextState[0], maxNextState[1], QLookup[(state(currState[1], currState[0]), maxCurrAction)])
+        currState = maxNextState
 
         iteration += 1
+        endOrNah = checkEnd(currState)
+        if endOrNah == 1:
+            episodes += 1
+            currState = starting
+            iteration = 0
 
-    pass
+    for i in range(len(mazeWorld)):
+        for j in range(len(mazeWorld[i])):
+            maxAction = 0
+            maxVal = INT_MIN
+
+            for k in range(4):
+                tempVal = QLookup[(state(j, i), k)]
+                if tempVal > maxVal:
+                    maxVal = tempVal
+                    maxAction = k
+
+
+            if mazeWorld[i][j] is not 0:
+                if mazeWorld[i][j] == -999:
+                    print "W |",
+                else:
+                    print "%s |" % (str(mazeWorld[i][j]).ljust(1)),
+            elif maxAction == UP:
+                print "^ |",
+            elif maxAction == DOWN:
+                print "v |",
+            elif maxAction == LEFT:
+                print "<-|",
+            else:
+                print "->|",
+        print ""
+
+    return
 
