@@ -270,6 +270,19 @@ def reinforcementLearning(val):
 
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
+            if mazeWorld[i][j] == -999:
+                print "~~~W~~~".ljust(6) + "|",
+            else:
+                maxVal = INT_MIN
+                maxAction = 0
+                for action in range(4):
+                    if QLookup[(state(j, i), action)] > maxVal:
+                        maxVal = QLookup[(state(j, i), action)]
+                print str(maxVal).ljust(6)[0:6] + " |",
+        print ""
+
+    for i in range(len(mazeWorld)):
+        for j in range(len(mazeWorld[i])):
             maxAction = 0
             maxVal = INT_MIN
 

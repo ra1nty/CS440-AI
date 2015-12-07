@@ -5,6 +5,9 @@ from Queue import Queue
 from sets import Set
 import pdb
 from gridWorld import mazeWorld, UP, DOWN, LEFT, RIGHT, right, intended, left, discount
+import numpy as np
+import matplotlib.pyplot as plt
+import random
 
 STOP = 1
 
@@ -23,6 +26,21 @@ def valueIteration():
     values = list()
     values.append(copy.deepcopy(mazeWorld))
     moves = list()
+    iterations = 0
+    coords = list()
+    saves = dict()
+    maxVal = -99999
+    for i in range(7):
+        while True:
+            x = random.randrange(0, len(mazeWorld))
+            y = random.randrange(0, len(mazeWorld[0]))
+
+            if mazeWorld[y][x] == 0 and (y, x) not in coords:
+                coords.append((y, x))
+                break
+
+    for coord in coords:
+        saves[coord] = list()
 
     while True:
         terminals = list()
@@ -67,6 +85,13 @@ def valueIteration():
         values.append(curr)
         moves.append(currMoves)
 
+        iterations += 1
+        for coord in coords:
+            temp = curr[coord[0]][coord[1]]
+            if temp > maxVal:
+                maxVal = temp
+
+            saves[coord].append(curr[coord[0]][coord[1]])
 
         if converged(values[t], values[t - 1]):
             break
@@ -99,6 +124,22 @@ def valueIteration():
             else:
                 print "v  |",
         print ""
+    print len(values)
+
+    leg = list()
+    ref = list()
+    for coord, vals in saves.iteritems():
+        line_x, = plt.plot(range(iterations), vals, label=str(coord))
+        leg.append(line_x)
+        ref.append(str(coord))
+
+    plt.legend(leg, ref, loc=4)
+    plt.title("1.1 Value iteration convergence")
+    plt.ylabel("Values")
+    plt.xlabel("Iterations")
+    plt.axis([0, iterations, 0, maxVal * 1.1])
+    plt.show()
+
     return values[t - 1]
 
 def converged(first, second):
