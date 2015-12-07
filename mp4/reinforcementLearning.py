@@ -152,7 +152,7 @@ def reinforcementLearning(val):
     # time - number
 
     episodes = 0
-    maxE = 100000
+    maxE = 10000
 
     while episodes < maxE:
         maxCurrAction = 0
@@ -265,6 +265,9 @@ def reinforcementLearning(val):
 
     maxRMSE *= 1.1
     plt.plot(range(maxE), rmse)
+    plt.title("RMSE Values")
+    plt.xlabel("Episodes")
+    plt.ylabel("RMSE value")
     plt.axis([0, maxE, 0, maxRMSE])
     plt.show()
 
