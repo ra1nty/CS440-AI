@@ -29,13 +29,13 @@ RIGHT = 3
 
 def main():
     print "~~~~~~~~~~ Value iteration rewards mean stop ~~~~~~~~~~\n\n"
-    valueIteration.valueIteration()
+    temp = valueIteration.valueIteration()
     valueIteration.STOP = 0
     print "\n\n~~~~~~~~~~ Value iteration rewards mean nothing ~~~~~~~~~~\n\n"
     valueIteration.valueIteration()
 
     print "\n\n~~~~~~~~~~ Reinforcement Learning ~~~~~~~~~~\n\n"
-    reinforcementLearning()
+    reinforcementLearning(temp)
 
 if __name__ == "__main__":
     main()

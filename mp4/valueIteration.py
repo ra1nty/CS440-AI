@@ -99,9 +99,10 @@ def valueIteration():
             else:
                 print "v  |",
         print ""
+    return values[t - 1]
 
 def converged(first, second):
-    thresh = 0.0001
+    thresh = 0.000001
     for i in range(len(first)):
         for j in range(len(first[i])):
             if abs(first[i][j] - second[i][j]) > thresh:

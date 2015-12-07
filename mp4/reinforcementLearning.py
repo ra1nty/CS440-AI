@@ -1,6 +1,9 @@
 import os
 import sys
 import copy
+import random
+import numpy as np
+import matplotlib.pyplot as plt
 from gridWorld import *
 from math import sqrt
 
@@ -46,7 +49,9 @@ def reward(x, y):
     else:
         return mazeWorld[y][x]
 
-def evalFunc(q, n):
+def exploration(q, n):
+    if n > 100:
+        return random.random()
     return q
 
 def tupleFromState(s):
@@ -107,7 +112,28 @@ def checkEnd(s):
         return 1
     return 0
 
-def reinforcementLearning():
+def rootmeansquare(valueIter, reinforcement, time):
+    tempVal = 0.0
+    a = 0
+    tempMax = INT_MIN
+
+    for i in range(len(mazeWorld)):
+        for j in range(len(mazeWorld[i])):
+            if mazeWorld[i][j] == 0:
+                for action in range(4):
+                    temp = reinforcement[(state(j, i), action)]
+                    if temp > tempMax:
+                        tempMax = temp
+                        a = action
+
+                if mazeWorld[i][j] == 0:
+                    tempVal += pow((reinforcement[(state(j, i), a)] - valueIter[i][j]), 2)
+
+    tempVal *= 0.5
+    tempVal = sqrt(tempVal)
+    return tempVal
+
+def reinforcementLearning(val):
     moveSet = dict()
     moveCount = dict()
     initializeMoveSet(moveSet)
@@ -116,6 +142,8 @@ def reinforcementLearning():
 
     currState = starting
     iteration = 0
+    rmse = list()
+    maxRMSE = INT_MIN
 
     # s - number
     # action - number
@@ -124,21 +152,45 @@ def reinforcementLearning():
     # time - number
 
     episodes = 0
+    maxE = 100000
 
-    while episodes < 10000:
+    while episodes < maxE:
         maxCurrAction = 0
         maxVal = INT_MIN
 
         # Find the max action at current state
         for action in range(4):
             # tempNextState = performAction(currState, action)
-            tempVal = exploration(moveCount[(state(currState[1], currState[0]), action)])
+            tempVal = exploration(QLookup[(state(currState[1], currState[0]), action)], moveCount[(state(currState[1], currState[0]), action)])
             if tempVal > maxVal:
                 maxVal = tempVal
                 maxCurrAction = action
 
         maxNextAction = 0
         maxVal = INT_MIN
+        tempRand = random.random()
+
+        if tempRand <= 0.8:
+            maxCurrAction = maxCurrAction
+        elif tempRand <= 0.9:
+            if maxCurrAction == UP:
+                maxCurrAction = LEFT
+            elif maxCurrAction == RIGHT:
+                maxCurrAction = UP
+            elif maxCurrAction == LEFT:
+                maxCurrAction = DOWN
+            else:
+                maxCurrAction = RIGHT
+        else:
+            if maxCurrAction == UP:
+                maxCurrAction = RIGHT
+            elif maxCurrAction == RIGHT:
+                maxCurrAction = DOWN
+            elif maxCurrAction == LEFT:
+                maxCurrAction = UP
+            else:
+                maxCurrAction = LEFT
+
         maxNextState = tupleFromState(performAction(currState, maxCurrAction))
 
         if not maxNextState == currState:
@@ -207,6 +259,14 @@ def reinforcementLearning():
         if endOrNah == 1:
             episodes += 1
             currState = starting
+            rmse.append(rootmeansquare(val, QLookup, iteration))
+            if rmse[len(rmse) - 1] > maxRMSE:
+                maxRMSE = rmse[len(rmse) - 1]
+
+    maxRMSE *= 1.1
+    plt.plot(range(maxE), rmse)
+    plt.axis([0, maxE, 0, maxRMSE])
+    plt.show()
 
     for i in range(len(mazeWorld)):
         for j in range(len(mazeWorld[i])):
