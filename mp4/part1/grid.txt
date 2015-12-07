@@ -1,0 +1,5 @@
+B -1 B B B B 
+B B B W -1 B
+B B B W B +3
+B B B B B B
++1 -1 B W -1 -1
