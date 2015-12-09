@@ -30,6 +30,7 @@ def valueIteration():
     coords = list()
     saves = dict()
     maxVal = -99999
+
     for i in range(7):
         while True:
             x = random.randrange(0, len(mazeWorld))
@@ -53,7 +54,7 @@ def valueIteration():
                     if values[t-1][y][x] is not 0 and values[t-1][y][x] is not -999:
                         terminals.append((y, x))
                 else:
-                    if values[t - 1][y][x] is not -999:
+                    if not values[t - 1][y][x] == -999:
                         terminals.append((y,x))
 
         for terminal in terminals:
